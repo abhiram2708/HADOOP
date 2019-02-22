@@ -1,0 +1,100 @@
+Download :
+----------
+https://www.mongodb.com/download-center/community?jmp=docs
+
+Way-1:
+-----
+1. copy 'mongodb-linux-x86_64-ubuntu1604-4.0.6.tgz' file into '/home/hadoop/softwares/mongodb' folder
+
+2. extract 'mongodb-linux-x86_64-ubuntu1604-4.0.6.tgz' file into '/home/hadoop/softwares/mongodb' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export MONGODB_HOME=/home/hadoop/softwares/mongodb/mongodb-linux-x86_64-ubuntu1604-4.0.6
+export PATH=$MONGODB_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $MONGODB_HOME
+
+6. create '/home/hadoop/softwares/mongodb/mongodb_data' folder
+
+command: mkdir -p /home/hadoop/softwares/mongodb/mongodb_data
+
+7. use below commands to work with mongodb
+
+To start mongodb server:
+mongod --dbpath=/home/hadoop/softwares/mongodb/mongodb_data
+
+To connect mongodb server:
+mongo
+
+
+
+Way-2:
+------
+1.Import the public key used by the package management system.
+
+	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+
+2.Create a list file for MongoDB and Add Repository 
+
+	sudo touch /etc/apt/sources.list.d/mongodb-org-4.0.list
+
+	echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/	sources.list.d/mongodb-org-4.0.list
+
+3. Reload local package database. 
+	sudo apt-get update
+
+4.Install the MongoDB packages
+
+		sudo apt-get install -y mongodb-org=4.0.6 mongodb-org-server=4.0.6 mongodb-org-shell=4.0.6 mongodb-org-mongos=4.0.6 mongodb-org-tools=4.0.6
+
+		echo "mongodb-org hold" | sudo dpkg --set-selections
+		echo "mongodb-org-server hold" | sudo dpkg --set-selections
+		echo "mongodb-org-shell hold" | sudo dpkg --set-selections
+		echo "mongodb-org-mongos hold" | sudo dpkg --set-selections
+		echo "mongodb-org-tools hold" | sudo dpkg --set-selections
+
+5.Start MongoDB Server
+		sudo service mongod start
+
+6.Stop MongoDB server
+
+		sudo service mongod stop
+
+
+7.Restart MongoDB
+
+		sudo service mongod restart
+
+8.Begin using MongoDB (it opens mongo shell)			
+		mongo
+
+
+NOTE:
+-----
+
+1)Mongo db log file location
+	 /var/lib/mongodb
+
+2) Mongodb configuration file location
+	/etc/mongod.conf
+
+
+
+HOW TO UN-INSTALL MONGO DB:
+==========================
+To uninstall mongodb execute below commands
+
+		sudo service mongod stop
+		sudo apt-get purge mongodb-org*
+		sudo rm -r /var/log/mongodb
+		sudo rm -r /var/lib/mongodb
+
+
+

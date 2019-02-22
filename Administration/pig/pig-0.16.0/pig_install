@@ -1,0 +1,19 @@
+1. copy 'pig-0.16.0.tar.gz' file into '/home/hadoop/softwares/pig' folder
+
+2. extract 'pig-0.16.0.tar.gz' file into '/home/hadoop/softwares/pig' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export PIG_HOME=/home/hadoop/softwares/pig/pig-0.16.0
+export PATH=$PIG_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $PIG_HOME
+
+6. pig start command:		pig -x local
+   pig stop command:		quit

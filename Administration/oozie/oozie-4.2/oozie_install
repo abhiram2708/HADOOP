@@ -1,0 +1,190 @@
+1. Download "oozie-4.2.0.tar.gz" file & extract the file into "/home/hadoop/softwares/oozie" folder
+
+2. rename "oozie-4.2.0" to "oozie-4.2.0_build"
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export OOZIE_BUILD=/home/hadoop/softwares/oozie/oozie-4.2.0_build
+export PATH=$OOZIE_BUILD/bin:$PATH
+
+4. re-open the terminal
+	
+echo $OOZIE_BUILD
+
+5. execute the below commands to build oozie with hadoop version
+
+Pre-requisites for this:
+----------------------------
+i. maven need to install (sudo apt-get install maven)
+ii. better to have high-end ram (>= 8GB)
+iii. better to have high-end NetWork Speed (>= 10mbps)
+
+
+hadoop-1.x compatability:
+----------------------------------
+$OOZIE_BUILD/bin/mkdistro.sh -DskipTests
+
+hadoop-2.x compatability:
+----------------------------------
+$OOZIE_BUILD/bin/mkdistro.sh -P hadoop-2 -DskipTests
+
+
+6. copy file from "$OOZIE_BUILD/distro/target/oozie-4.2.0-distro.tar.gz" to "work" folder and then extract it.
+
+7. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export OOZIE_HOME=/home/hadoop/softwares/oozie/oozie-4.2.0
+export PATH=$OOZIE_HOME/bin:$PATH
+
+8. re-open the terminal
+	
+echo $OOZIE_HOME
+
+9. create "$OOZIE_HOME/libext" folder
+
+10. copy "ext-2.2.zip" to "$OOZIE_HOME/libext" folder
+
+11. copy "hadooplib-2.6.0.oozie-4.2.0/*.jar" files to "$OOZIE_HOME/libext"
+
+12. $OOZIE_HOME/bin/oozie-setup.sh prepare-war -d $OOZIE_HOME/libext
+
+i. bydefault oozie comes with `command line support`
+ii. to work with `web ui`, we need to prepare a war file
+
+13. $OOZIE_HOME/bin/ooziedb.sh create -sqlfile oozie.sql -run
+
+14. update "$HADOOP_HOME/etc/hadoop/core-site.xml" file with below properties
+
+<property>
+  <name>hadoop.proxyuser.hadoop.hosts</name>
+  <value>*</value>
+</property>
+<property>
+  <name>hadoop.proxyuser.hadoop.groups</name>
+  <value>*</value>
+</property>
+
+15. restart the "hadoop" using "stop-all.sh & start-all.sh"
+
+16. update "$OOZIE_HOME/conf/oozie-site.xml" file with below property
+
+<property>
+    <name>oozie.service.HadoopAccessorService.hadoop.configurations</name>
+    <value>*=/home/hadoop/softwares/hadoop/hadoop-2.6.0/etc/hadoop</value>
+</property>
+<property>
+    <name>oozie.processing.timezone</name>
+    <value>GMT+0530</value>
+</property>
+<property>
+    <name>oozie.service.coord.check.maximum.frequency</name>
+    <value>false</value>
+</property>
+
+i. bydefault oozie `time zone` is 'UTC'
+ii. bydefault oozie minimum time interval for cron jobs is `5 min`
+
+
+17. Start the Oozie Server using below commands
+
+$OOZIE_HOME/bin/oozie-start.sh
+$OOZIE_HOME/bin/oozie-run.sh
+
+$OOZIE_HOME/bin/oozied.sh start
+$OOZIE_HOME/bin/oozied.sh run
+
+i. `oozie` process name is `Bootstrap`
+ii. bydefault oozie http port is `11000`
+
+18. Verify the "oozie" status with below commands
+
+$OOZIE_HOME/bin/oozie admin -oozie http://localhost:11000/oozie -status
+
+19. extract "$OOZIE_HOME/oozie-examples.tar.gz" & "$OOZIE_HOME/oozie-sharelib-4.2.0.tar.gz" files in "$OOZIE_HOME" folder
+
+i. `examples` folder contains all `oozie examples`
+ii. `share/lib` folder contains all `oozie related jar files and hadoop eco system related jar files`
+
+
+20. execute below commands to work with "oozie" examples
+
+find $OOZIE_HOME/examples/ -name "job.properties" -exec sed -i "s/localhost:8020/localhost:8020/g" '{}' \;
+find $OOZIE_HOME/examples/ -name "job.properties" -exec sed -i "s/localhost:8021/localhost:8032/g" '{}' \;
+
+i. we are updating `Name Node RPC port (8020)`
+ii. we are updating `Resource Manager RPC port (8032)`
+
+
+21. copy data from "local fs" to "hdfs" using below commands
+
+hadoop fs -put $OOZIE_HOME/examples examples
+hadoop fs -put $OOZIE_HOME/share share
+
+22. verify "share lib" in "oozie" using below commands
+
+oozie admin -shareliblist -oozie http://localhost:11000/oozie
+oozie admin -sharelibupdate -oozie http://localhost:11000/oozie
+
+23. run "oozie" command
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -config $OOZIE_HOME/examples/apps/map-reduce/job.properties -run
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -config $OOZIE_HOME/examples/apps/hive/job.properties -run
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -config $OOZIE_HOME/examples/apps/pig/job.properties -run
+
+24. kill "oozie" command
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -kill 0000002-160627080805990-oozie-hado-C
+
+25. new examples in oozie
+
+hadoop fs -rmr kalyan-examples
+hadoop fs -put $OOZIE_HOME/kalyan-examples kalyan-examples
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -config $OOZIE_HOME/kalyan-examples/apps/wordcount-wf/job.properties -run
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -config $OOZIE_HOME/kalyan-examples/apps/wordcount-cron/job.properties -run
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -config $OOZIE_HOME/kalyan-examples/apps/wordcount-event/job.properties -run
+
+
+26. if jobs are not possible to run, issue with yarn. 
+    update "yarn-site.xml" with below properties and restart "yarn"
+
+<property>
+	<name>yarn.scheduler.minimum-allocation-mb</name>
+	<value>512</value>
+</property>
+<property>
+	<name>yarn.scheduler.maximum-allocation-mb</name>
+	<value>2048</value>
+</property>
+<property>
+	<name>yarn.nodemanager.resource.memory-mb</name>
+	<value>8196</value>
+</property>
+
+
+
+
+$OOZIE_HOME/bin/oozie job -oozie http://localhost:11000/oozie -config $OOZIE_HOME/kalyan-new-examples/apps/kalyan-sqoop/job.properties -run
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

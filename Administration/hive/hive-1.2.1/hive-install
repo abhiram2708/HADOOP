@@ -1,0 +1,102 @@
+1. copy 'apache-hive-1.2.1-bin.tar.gz' file into '/home/hadoop/softwares/hive' folder
+
+2. extract 'apache-hive-1.2.1-bin.tar.gz' file into '/home/hadoop/softwares/hive' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export HIVE_HOME=/home/hadoop/softwares/hive/apache-hive-1.2.1-bin
+export PATH=$HIVE_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $HIVE_HOME
+
+6. create 'hive-site.xml' in '$HIVE_HOME/conf' folder then update proper content
+
+7. hive start command:		hive
+   hive stop command:		exit;
+   hive verify command:     show databases;
+
+Note:
+-----------
+Exception in thread "main" java.lang.IncompatibleClassChangeError: Found class jline.Terminal, but interface was expected
+	at jline.console.ConsoleReader.<init>(ConsoleReader.java:230)
+	at jline.console.ConsoleReader.<init>(ConsoleReader.java:221)
+	at jline.console.ConsoleReader.<init>(ConsoleReader.java:209)
+	at org.apache.hadoop.hive.cli.CliDriver.setupConsoleReader(CliDriver.java:787)
+	at org.apache.hadoop.hive.cli.CliDriver.executeDriver(CliDriver.java:721)
+
+
+Solution:
+-------------------
+Delete 'jline-0.9.94.jar' jar file from '$HADOOP_HOME/share/hadoop/yarn/lib' folder
+
+
+Note:
+-------------------------
+1. In internal metastore hive will take care of installing & starting `Embeded Derby`
+
+2. In external metastore , we need to take care of installing & starting `Derby or MySql or Oracle or MsSql`
+
+
+RDBMS connection Details
+------------------------------
+1. connection url
+2. username & password
+3. driver class name
+4. client jar
+
+
+Derby + Hive installation:
+---------------------------------
+1. connection url	=> 'jdbc:derby://localhost:1527/hive_derby;create=true'	 
+2. username & password	=> 'sa' & ''
+3. driver class name	=> 'org.apache.derby.jdbc.ClientDriver'
+4. client jar		=> 'derbyclient.jar'
+
+copy 'derbyclient.jar' jar file from '$DERBY_HOME/lib' folder to '$HIVE_HOME/lib' folder
+
+
+
+
+Mysql Installation:
+----------------------
+sudo apt-get install mysql-server mysql-client
+
+
+Start command for Mysql:
+---------------------------
+sudo service mysql start
+
+
+Stop command for Mysql:
+---------------------------
+sudo service mysql stop
+
+
+Connect command for Mysql:
+---------------------------
+mysql -u root -p
+
+
+
+MySql + Hive installation:
+---------------------------------
+1. connection url	=> 'jdbc:mysql://localhost:3306/hive_mysql_db?createDatabaseIfNotExist=true'	 
+2. username & password	=> 'root' & 'hadoop'
+3. driver class name	=> 'com.mysql.jdbc.Driver'
+4. client jar		=> 'mysql-connector-java-5.1.38.jar'
+
+copy 'mysql-connector-java-5.1.38.jar' jar file  to '$HIVE_HOME/lib' folder
+
+
+
+
+
+
+
+

@@ -1,0 +1,51 @@
+Way-1:
+=====
+1. copy 'apache-cassandra-3.11.4-bin.tar.gz' file into '/home/hadoop/softwares/cassandra' folder
+
+2. extract 'apache-cassandra-3.11.4-bin.tar.gz' file into '/home/hadoop/softwares/cassandra' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export CASSANDRA_HOME=/home/hadoop/softwares/cassandra/apache-cassandra-3.11.4-bin
+export PATH=$CASSANDRA_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $CASSANDRA_HOME
+
+6. cassandra start command:	cassandra
+   cassandra stop command:	CTRL + C
+   cassandra cql shell   : 	cqlsh
+
+
+
+
+Way-2:
+=====
+execute below commands
+
+$echo "deb http://www.apache.org/dist/cassandra/debian 311x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
+$curl https://www.apache.org/dist/cassandra/KEYS | sudo apt-key add -
+$sudo apt-get update
+
+* ) If you encounter this error:
+GPG error: http://www.apache.org 311x InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY A278B781FE4B2BDA
+
+$sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-key A278B781FE4B2BDA
+
+sudo apt-get install cassandra
+
+
+-> You can start Cassandra with 'sudo service cassandra start' and stop it with 'sudo service cassandra stop'. However, normally the service 	will start automatically. For this reason be sure to stop it if you need to make any configuration changes.
+-> Verify that Cassandra is running by invoking 'nodetool status' from the command line.
+-> The default location of configuration files is '/etc/cassandr'a.
+-> The default location of log and data directories is '/var/log/cassandra/' and '/var/lib/cassandra'.
+-> Start-up options (heap size, etc) can be configured in '/etc/default/cassandra'.
+
+
+
+

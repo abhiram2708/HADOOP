@@ -1,0 +1,18 @@
+1. copy 'sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz' file into '/home/hadoop/softwares/sqoop' folder
+
+2. extract 'sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz' file into '/home/hadoop/softwares/sqoop' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export SQOOP_HOME=/home/hadoop/softwares/sqoop/sqoop-1.4.7.bin__hadoop-2.6.0
+export PATH=$SQOOP_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $SQOOP_HOME
+
+6. execute the sqoop commands

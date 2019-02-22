@@ -1,0 +1,18 @@
+1. copy 'kafka_2.12-2.1.0.tgz' file into '/home/hadoop/softwares/kafka' folder
+
+2. extract 'kafka_2.12-2.1.0.tgz' file into '/home/hadoop/softwares/kafka' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export KAFKA_HOME=/home/hadoop/softwares/kafka/kafka_2.12-2.1.0
+export PATH=$KAFKA_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $KAFKA_HOME
+
+6. practice kafka examples

@@ -1,0 +1,86 @@
+1. copy 'hbase-1.2.5-bin.tar.gz' file into '/home/hadoop/softwares/hbase' folder
+
+2. extract 'hbase-1.2.5-bin.tar.gz' file into '/home/hadoop/softwares/hbase' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export HBASE_HOME=/home/hadoop/softwares/hbase/hbase-1.2.5
+export PATH=$HBASE_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $HBASE_HOME
+
+6. update 'hbase-site.xml' in '$HBASE_HOME/conf' folder with proper content
+
+7. hbase start command:		start-hbase.sh
+   hbase stop command:		stop-hbase.sh
+   hbase verify command:        hbase shell
+
+8. Zookeeper requirements
+
+client port 		=>	2181
+peer port		=>	2888
+leader port		=>	3888
+
+i. define zookeeper `dataDir` (/home/hadoop/softwares/hbase/zoo_data)
+ii. `dataDir` must and should exists
+iii. `myid` file should exists in `dataDir` folder
+iv.  inside the `myid` file contains `zookeeper server id`
+
+9. `Error: JAVA_HOME is not set`
+
+Solution: update `$HBASE_HOME/conf/hbase-env.sh` with `JAVA_HOME` path
+
+export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+
+
+10. Starting Order of Hbase
+
+first `Zookeeper` then only `HMaster`
+
+`HRegionServer` can be any order
+
+
+11. Stoping Order of Hbase
+
+first `HMaster` then only `Zookeeper`
+
+HRegionServer can be any order
+
+
+12. Hbase Cluster mode changes (Bydefault is Internal Zookeeper)
+
+Internal Zookeeper => Update `$HBASE_HOME/conf/hbase-env.sh` file with below property
+
+export HBASE_MANAGES_ZK=true
+
+-> hbase will install the zookeeper
+-> hbase will start the zookeeper
+
+External Zookeeper => Update `$HBASE_HOME/conf/hbase-env.sh` file with below property
+
+export HBASE_MANAGES_ZK=false
+
+-> we need to install the zookeeper
+-> we need to start the zookeeper
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

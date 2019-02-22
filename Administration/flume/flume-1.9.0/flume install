@@ -1,0 +1,20 @@
+1. copy 'apache-flume-1.9.0-bin.tar.gz' file into '/home/hadoop/softwares/flume' folder
+
+2. extract 'apache-flume-1.9.0-bin.tar.gz' file into '/home/hadoop/softwares/flume' folder
+
+3. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+export FLUME_HOME=/home/hadoop/softwares/flume/apache-flume-1.9.0-bin
+export PATH=$FLUME_HOME/bin:$PATH
+
+4. re-open the terminal
+	
+5. verify with below command
+	
+echo $FLUME_HOME
+
+6. copy the 'abhitech_examples' folder into '$FLUME_HOME' folder
+
+7. execute the flume commands
