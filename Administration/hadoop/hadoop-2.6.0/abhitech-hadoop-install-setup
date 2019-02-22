@@ -1,0 +1,60 @@
+---------------------------------------------------------------------------------------------------------
+					Hadoop Single Node setup
+---------------------------------------------------------------------------------------------------------
+
+1. create a new 'hadoop' user in ubuntu.
+
+2. create '/home/hadoop/softwares/hadoop' folder
+
+command: mkdir -p /home/hadoop/softwares/hadoop
+
+3. Download 'hadoop-2.6.0.tar.gz' file from hadoop repository, copy 'hadoop-2.6.0.tar.gz' file into this '/home/hadoop/softwares' directory and extract the tar file in same directory
+
+command: tar -xvzf hadoop-2.6.0.tar.gz  -C /home/hadoop/softwares/hadoop
+
+Install java
+Commands:
+        sudo add-apt-repository ppa:webupd8team/java
+	sudo apt update
+	sudo apt install oracle-java8-installer 
+	sudo apt install oracle-java8-set-default
+
+
+
+4. update '~/.bashrc' file with below changes
+
+command: gedit ~/.bashrc
+
+	export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+	export HADOOP_HOME=/home/hadoop/softwares/hadoop/hadoop-2.6.0
+	export PATH=$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+
+Note: Re-open the Terminal after saving the file
+
+5. Enter the below commands on terminal: 
+	ssh localhost
+	ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa 
+	cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+6. Update the '$HADOOP_HOME/etc/hadoop' folder files 'core-site.xml','hdfs-site.xml','mapred-site.xml','yarn-site.xml','hadoop-env.sh','mapred-env.sh','yarn-env.sh' and 'slaves' files as per the required configurations
+
+7. update "/etc/hosts" file.
+command: sudo gedit /etc/hosts
+
+127.0.0.1	localhost
+127.0.0.1	hadoop
+
+8. Format the 'namenode' from  current machine using this command: 
+	hadoop namenode -format
+
+9. Start the hadoop by using this command on current machine:
+      	start-all.sh
+	mr-jobhistory-daemon.sh start historyserver
+
+10. Stop the hadoop by using this command on current machine:
+      	stop-all.sh
+	mr-jobhistory-daemon.sh stop historyserver
+
+
+---------------------------------------
+
