@@ -1,0 +1,36 @@
+HMaster:
+http://localhost:16010/
+
+Backup HMaster1:
+command: local-master-backup.sh start 1
+http://localhost:16011/
+
+Backup HMaster2:
+command: local-master-backup.sh start 2
+http://localhost:16012/
+
+===============================
+
+HRegionServer:
+http://localhost:16301/
+
+Backup HRegionServer1: 
+command: local-regionservers.sh start 2
+http://localhost:16302/
+
+Backup HRegionServer2:
+command: local-regionservers.sh start 3
+http://localhost:16303/
+
+
+
+
+
+
+
+
+
+
+
+
+

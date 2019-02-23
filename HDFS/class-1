@@ -1,0 +1,330 @@
+START AND STOP COMMANDS:
+-------------------------
+Hadoop-1.x:
+------------------
+1. HDFS:  
+----------
+start-dfs.sh => starting the NN, DN, SNN
+stop-dfs.sh => stoping the NN, DN, SNN
+
+2. MAPREDUCE:  
+--------------
+start-mapred.sh => starting the JT, TT
+stop-mapred.sh => stoping the JT, TT
+
+3. HADOOP-1.X:
+-------------------
+start-all.sh => starting the NN, DN, SNN, JT, TT
+stop-all.sh => stoping the NN, DN, SNN, JT, TT
+
+
+Hadoop-2.x:
+------------------
+1. HDFS:  
+----------
+start-dfs.sh => starting the NN, DN, SNN
+stop-dfs.sh => stoping the NN, DN, SNN
+
+2. YARN:  
+--------------
+start-yarn.sh => starting the RM, NM
+stop-yarn.sh => stoping the RM, NM
+
+3. HADOOP-2.X:
+-------------------
+start-all.sh => starting the NN, DN, SNN, RM, NM
+stop-all.sh => stoping the NN, DN, SNN, RM, NM
+
+
+HOW TO START AND STOP INDIVIDUAL PROCESS
+-----------------------------------------
+1. HDFS:  
+----------
+hadoop-daemon.sh start namenode => starting the NN
+hadoop-daemon.sh stop namenode => stoping the NN
+
+hadoop-daemon.sh start datanode => starting the DN
+hadoop-daemon.sh stop datanode => stoping the DN
+
+hadoop-daemon.sh start secondarynamenode => starting the SNN
+hadoop-daemon.sh stop secondarynamenode => stoping the SNN
+
+
+2. YARN:  
+--------------
+yarn-daemon.sh start resourcemanager => starting the RM
+yarn-daemon.sh stop resourcemanager => stoping the RM
+
+yarn-daemon.sh start nodemanager => starting the NM
+yarn-daemon.sh stop nodemanager => stoping the NM
+
+
+Hadoop-1.x:
+----------------
+hadoop fs
+
+
+Hadoop-2.x, 3.x:
+----------------
+hadoop fs
+
+(or)
+
+hdfs dfs
+
+url: http://localhost:50070
+
+
+-------------------------------------------------
+
+
+
+
+
+
+WORK WITH BASIC COMMANDS:
+-------------------------
+-------------------------
+
+---> mkdir
+	Description:
+		this commmad is used for create a directory in hdfs .if the directory alredy exit it fails .
+
+	syntax:
+		$ hdfs dfs -mkdir <dst>
+
+	Ex :   hdfs dfs -mkdir /home/abhi/hdfs
+
+
+==========================================================================================================================================
+---> put 
+	Description:
+		this commmad is used for transfer the files from local system to hdfs  in hdfs .if the file alredy exit it 			fails .
+
+		syntax:
+			$ hdfs dfs -mkdir <locsrc> <dst>
+
+		Ex :   hdfs dfs -put /home/abhi/Desktop/abc.txt  /home/abhi
+
+
+ 	==========================================================================================================================================
+--> CopyFromLocal 
+		Description:
+			This command same as -put . This is new command in hadoop 2.
+==========================================================================================================================================
+
+-->get 
+		Description:
+			This command is used to copy the files from hdfs to local filesystem.
+			
+		Syntax:
+			$ hdfs dfs -get  <src> <localdst>
+		Example:
+			$ hdfs dfs -get  /home/abhi/file1  /home/abhi/hadoop/
+
+==========================================================================================================================================
+-->copyToLocal
+	
+Description:
+			This command same as -get . This is new command in hadoop 2
+
+
+==========================================================================================================================================	
+
+---> rm 
+	Description:
+		this command is used to remove files from hdfs .if file already not exist it fails.we can delete multiple files at at a 		time with space seperated list of files.If trash is enabled, file system instead moves the deleted file to a trash directory
+		The -r or -R option deletes the directory and any content under it recursively.		
+
+	Syntax:
+		$ hadoop fs -rm /home/abhi/abc.txt
+		$ hadoop fs -rm /home/abhi/abc.txt  /home/abhi/abcd.txt
+		$ hadoop fs -rm  -R /home/abhi/target_dir
+
+
+
+
+==========================================================================================================================================
+ --> cat
+		Syntax:
+			 hadoop fs -cat [-ignoreCrc] URI [URI ...]
+
+               Description:
+			Copies source paths to stdout.
+
+.
+		Example:
+   
+			hadoop fs -cat /home/chenchu/hdfs/wordcount
+
+==========================================================================================================================================
+	
+Take Content from stdin write to hdfs file:
+-------------------------------------------
+		To write the data to hdfs file from command promt use '-' as source .it opens the buffer take input from user write 			to hdfs file.	Use ctrl+D for stop content.
+
+		Example :
+			hdfs dfs -put - /home/chenchu/hdfs/newfile1
+
+==========================================================================================================================================
+
+--> appendToFile
+		
+		Description :
+				This command use for append the data to existing file in hdfs.We can append single source or multiple local 					source .Data will append at end of file in hdfs. 	
+				
+
+==========================================================================================================================================
+
+-->  count
+
+ 		Description:
+			Count the number of directories, files and bytes under the given hdfspaths  that match the specified file 				pattern.The output columns with -count are: DIR_COUNT, FILE_COUNT, CONTENT_SIZE, PATHNAME
+		Syntax:
+			hdfs dfs -count  <path>
+		Example:
+		$hdfs  dfs -count  /user/abhi
+
+==========================================================================================================================================
+
+--> cp
+	Description:
+		copy the files from one location to other location with in hdfs .his command allows multiple sources as well in which case 
+			the destination must be a directory.
+
+
+		Syntax:
+			$hdfs dfs -cp <URI ...> <dest>
+		Example: 
+			$hdfs dfs -cp /home/abhi/file1 /home/test/
+			$hdfs dfs -cp/home/abhi/file1 /home/abhi/file2   /user/test/
+
+==========================================================================================================================================
+--> mv
+	Description:
+		move the files from one location to other location with in hdfs .his command allows multiple sources as well in which case 
+			the destination must be a directory.After this command successful excecution src  file wont'exist.Moving files 			across file systems is not permitted
+
+
+		Syntax:
+			$hdfs dfs -mv <URI ...> <dest>
+		Example: 
+			$hdfs dfs -mv /home/abhi/file1 /home/test/
+			$hdfs dfs -mv /home/abhi/file1 /home/abhi/file2   /user/test/
+
+==========================================================================================================================================
+   			
+
+--> find 
+	Description:
+	
+	Finds all files that match the specified expression and applies selected actions to them. If no path is specified then defaults to 		the current working directory. If no expression is specified then defaults to -print.
+	
+	
+
+	Possible expressions are below
+		=> name:
+			name of the file match expression with  case sensitive.
+		=>iname : 
+			name of the file match expression with  case sensitive.
+		=>print : 
+			print the current pathname to be written to standard output. 
+
+		=>print0 :
+			If the -print0 expression is used then an ASCII NULL character is appended
+
+
+		
+	Syntax:
+			$hadoop fs -find <path> ... <expression> ..
+	
+	Example :
+			$ hdfs dfs -find /  -name newfile  -print	
+
+
+
+==========================================================================================================================================
+
+--> ls
+
+	Description:
+		listout the file and directories in specified path.This Command returns the output follwing format
+
+		permissions    number_of_replicas     userid    groupid    filesize modification_date modification_time    filename
+
+
+	Syntax:
+		$hdfs dfs ls <path>
+
+	Example:
+		$hdfs dfs ls /user/abhi
+
+	
+	==========================================================================================================================================	
+
+--> ls -R
+	Description:
+		listout the file and directories in specified path in recursive way.
+
+	Syntax:
+		$hdfs dfs ls -R <path>
+
+	Example:
+		$hdfs dfs ls -R  /user/abhi
+
+
+
+==========================================================================================================================================
+
+--> moveFromLocal
+		Description:
+			Moves files from source to destination. This command allows multiple sources as well in which case the destination 				needs to be a directory. Moving files across file systems is not permitted.After Successful execution of this 				command local src won't be available
+			
+
+			Syntax:
+			hdfs dfs -moveFromLocal   <localsrc> <dst>
+
+	
+			Example:
+
+			hadoop fs -mv /home/abhi/file1 /user/hadoop/file2
+			hadoop fs -mv /home/abhi/file1 /home/abhi/file2  /user/home/dir1
+
+==========================================================================================================================================
+
+--> moveToLocal
+
+		note: this command not yet implemeted.
+==========================================================================================================================================
+--> rmdir
+		
+
+     Descriptin:
+         	This Command delete a directory.use '--ignore-fail-on-non-empty' option  if a directory still contains files.
+
+		Syntax: hadoop fs -rmdir  [URI ...]
+
+		Example:
+
+		hadoop fs -rmdir /user/hadoop/dir1
+
+==========================================================================================================================================
+
+--> -rm -r
+		Description:
+			Recursive version of delete.
+
+
+		Syntax :
+			 hadoop fs -rm -r  [URI ...]
+		Example:
+			hadoop fs -rm -r /home/hadoop/dir1
+
+
+==========================================================================================================================================
+
+
+
+
+
+

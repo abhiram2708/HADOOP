@@ -1,0 +1,36 @@
+Inserting the data:
+=========================
+function insertData(dbName, colName, data) {
+  var col = db.getSiblingDB(dbName).getCollection(colName);
+  for (i = 0; i < data.length; i++) {
+    col.insert(data[i]);
+  }
+  print(col.count());
+};
+
+var data = [
+	{ "_id" : "1", "x" : 0 },
+	{ "_id" : "2", "x" : 1 },
+	{ "_id" : "3", "x" : 2 }
+];
+
+insertData("test", "testData", data);
+
+
+
+Finding the data:
+=========================
+var data = {"x" : 2};
+
+function findData(dbName, colName, data) {
+  var col = db.getSiblingDB(dbName).getCollection(colName);
+  return col.find(data);
+};
+
+var fdata = findData("test", "testData", data);
+
+
+
+
+
+

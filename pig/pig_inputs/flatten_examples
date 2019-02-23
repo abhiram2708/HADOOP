@@ -1,0 +1,46 @@
+flatten({ (a1,b1), (a2,b2), (a3,b3) })
+	==>
+		(a1,b1)
+		(a2,b2)
+		(a3,b3)
+
+flatten( ( (a1,b1), (a2,b2), (a3,b3) ) )
+	==>
+		( (a1,b1), (a2,b2), (a3,b3) )
+
+
+flatten( (a1,b1) )  ==>  (a1,b1)
+
+
+A1 = load '/home/hadoop/work/pig_inputs/group_A';
+dump A1;
+(Joe,cherry)
+(Ali,apple)
+(Joe,banana)
+(Eve,apple)
+
+C1 = GROUP A1 ALL;
+dump C1;
+(all,{(Joe,cherry),(Ali,apple),(Joe,banana),(Eve,apple)})
+
+A2 = foreach C1 generate FLATTEN($1);
+dump A2;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

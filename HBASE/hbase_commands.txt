@@ -1,0 +1,460 @@
+HOW TO CREATE TABLE IN HBASE
+-----------------------------------------------------------
+create 'tbl_name', 'column_family1', 'column_family2', ...
+
+create 'tbl_name', { NAME => 'column_family1', ... }, { NAME => 'column_family2', ... }, ...
+
+HOW TO INSERT / UPDATE DATA IN HBASE
+-----------------------------------------------------------
+put 'tbl_name', 'row_key', 'column_family1:qualifier', 'value'
+
+
+HOW TO READ DATA FROM HBASE
+-----------------------------------------------------------
+scan 'tbl_name'
+scan 'tbl_name', {COLUMNS => 'column_family:qualifier'}
+get 'tbl_name', 'row_key', {COLUMNS => 'column_family:qualifier'}
+
+
+HOW TO DELETE DATA FROM HBASE
+-----------------------------------------------------------
+delete 'tbl_name', 'row_key', 'column_family1:qualifier'
+
+
+HOW TO LIST TABLES IN HBASE
+-----------------------------------------------------------
+list 'tbl_name'
+list 'regex'
+
+
+EXAMPLES ON HBASE TABLES
+-----------------------------------------------------------
+create 'sample', 'cf1', 'cf2'
+
+create 'test', { NAME => 'cf', VERSIONS => 5 }
+put 'test', 'row1', 'cf:a', 'value1'
+put 'test', 'row2', 'cf:b', 'value2'
+put 'test', 'row3', 'cf:c', 'value3'
+
+put 'test', 'row4', 'cf:d', 'value11', 11
+put 'test', 'row4', 'cf:d', 'value12', 12
+put 'test', 'row4', 'cf:d', 'value13', 13
+
+list 'test'
+list 't.*'
+
+scan 'test'
+scan 'test',{COLUMNS => 'cf'}
+scan 'test',{COLUMNS => 'cf:a'}
+scan 'test',{COLUMNS => ['cf:a','cf:b']}
+scan 'test',{COLUMNS => 'cf:a', VERSIONS => 5}
+scan 'test',{COLUMNS => 'cf', STARTROW => 'row2', LIMIT => 3}
+scan 'test',{COLUMNS => 'cf', TIMESTAMP => 1396584133139}
+scan 'test',{COLUMNS => 'cf', TIMERANGE => [1396584133139,1404876097252]}
+
+get 'test', 'row1'
+get 'test', 'row1', {COLUMNS => 'cf'}
+get 'test', 'row1', {COLUMNS => 'cf:a'}
+get 'test', 'row1', {COLUMNS => 'cf:a', VERSIONS => 5}
+get 'test', 'row1', {COLUMNS => 'cf', TIMESTAMP => 1396584133139}
+get 'test', 'row1', {COLUMNS => 'cf', TIMERANGE => [1396584133139,1396584634044], VERSIONS => 5}
+
+
+delete 'test', 'row4', 'cf:d'
+delete 'test', 'row4', 'cf:d', 2
+
+
+put 'test', 'row4', 'cf:d', 'value4'
+put 'test', 'row4', 'cf:d', 'value4'
+put 'test', 'row4', 'cf:e', 'value4'
+put 'test', 'row4', 'cf:e', 'value4'
+
+deleteall 'test', 'row4'
+deleteall 'test', 'row4', 'cf:d'
+
+
+import java.text.SimpleDateFormat
+import java.text.ParsePosition
+SimpleDateFormat.new("yy/MM/dd HH:mm:ss").parse("08/08/16 20:56:29", ParsePosition.new(0)).getTime()
+
+
+import java.util.Date
+Date.new(1218900389000).toString() 
+=> "Sat Aug 16 20:56:29 IST 2008"
+
+
+HELP COMMANDS IN HBASE
+-----------------------------------------------------------
+help 'scan'
+help 'get'
+help 'delete'
+help 'put'
+
+
+STATUS COMMANDS IN HBASE
+-----------------------------------------------------------
+hbase> status
+hbase> status 'summary'
+hbase> status 'simple'
+hbase> status 'detailed'
+hbase> version
+hbase> whoami
+
+-----------------------------------------------------------
+		ALTER COMMANDS IN HBASE
+-----------------------------------------------------------
+create 't1', 'cf'
+put 't1','r1', 'cf:f1', 'a1'
+put 't1','r1', 'cf:f2', 'a2'
+put 't1','r2', 'cf:f3', 'a3'
+put 't1','r2', 'cf:f2', 'a22'
+
+describe 't1'
+disable 't1'
+enable 't1'
+
+hbase> alter 't1', NAME => 'cf', VERSIONS => 2
+hbase> alter 't1', NAME => 'f1', VERSIONS => 2
+hbase> alter 't1', 'f1', {NAME => 'f2', IN_MEMORY => true}, {NAME => 'f3', VERSIONS => 5}
+
+hbase> alter 't1', 'delete' => 'f1'
+hbase> alter 't1',  NAME => 'f2', METHOD => 'delete'
+
+hbase> alter 't1', METHOD => 'table_att', MAX_FILESIZE => '134217728'
+hbase> alter 't1', METHOD => 'table_att_unset', NAME => 'MAX_FILESIZE'
+
+hbase> create 't2', {NAME => 'f1', VERSIONS => 5}
+hbase> create 't3', {NAME => 'f1'}, {NAME => 'f2'}, {NAME => 'f3'}
+hbase> create 't3', 'f1', 'f2', 'f3'
+hbase> create 't5', {NAME => 'f1', VERSIONS => 1, TTL => 5, BLOCKCACHE => true}
+
+hbase> describe 't2'
+
+hbase> disable 't2'
+hbase> disable_all 't.*'
+hbase> is_disabled 't2'
+
+hbase> drop 't2'
+hbase> drop_all 't.*'
+hbase> exists 't2'
+
+hbase> enable 't2'
+hbase> enable_all 't.*'
+hbase> is_enabled 't2'
+
+hbase> list
+hbase> list 'abc.*'
+hbase> show_filters
+
+hbase> alter_async 't1', NAME => 'f1', METHOD => 'delete'
+hbase> alter_async 't1', 'delete' => 'f1'
+hbase> alter_status 't1'
+
+
+==================================================================
+			HBASE ADMIN COMMANDS
+==================================================================
+HOW TO ADD PEER
+----------------------------------------------------
+add_peer '1', "localhost:2181:/hbase-1"
+add_peer '2', "localhost:2181:/hbase-2"
+add_peer '3', "localhost:2181:/hbase-3"
+
+
+HOW TO LIST PEERS
+----------------------------------------------------
+list_peers
+
+
+HOW TO ENABLE PEER
+----------------------------------------------------
+enable_peer '1'
+
+
+HOW TO DISABLE PEER
+----------------------------------------------------
+disable_peer '1'
+
+
+HOW TO REMOVE PEER
+----------------------------------------------------
+remove_peer '1'
+
+
+
+HOW TO BALANCE THE CLUSTER
+----------------------------------------------------
+balancer
+
+
+HOW TO ENABLE THE BALANCER IN CLUSTER
+----------------------------------------------------
+balance_switch true
+
+
+HOW TO DISABLE THE BALANCER IN CLUSTER
+----------------------------------------------------
+balance_switch false
+
+
+
+HOW TO WORK WITH HBASE REGIONS
+----------------------------------------------------
+create 'mytable1', 'cf', {NUMREGIONS => 5, SPLITALGO => 'HexStringSplit'}
+
+create 'mytable2', 'cf', {NUMREGIONS => 5, SPLITALGO => 'UniformSplit'}
+
+create 'mytable3', 'cf', {NUMREGIONS => 5, SPLITS=> ['a', 'b', 'c']}
+
+merge_region 'f7f380290ce31bac8977f9a84e2cc5ab', '83032a74a27066c0c5cdfe4ab76c101f', true
+
+
+create 'mytable4', {NAME => 'cf', BLOCKSIZE => '262144'}
+disable 'mytable4'
+alter 'mytable4', {NAME => 'cf', BLOCKSIZE => '524288'}
+enable 'mytable4'
+
+major_compact 'mytable4'
+
+
+
+----------------------------------------------------
+		HBASE BULK LOADING
+----------------------------------------------------
+create 'mytable5', 'cf'
+create 'mytable6', 'cf'
+
+
+hadoop fs -rmr /hbase_inputs
+hadoop fs -put /home/hadoop/softwares/hbase/hbase_inputs /hbase_inputs
+
+----------------------------------------------------
+
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.columns=HBASE_ROW_KEY,cf:c1,cf:c2 mytable5 hdfs:/localhost:8020/hbase_inputs/import/sample1.tsv
+
+HADOOP_CLASSPATH=`${HBASE_HOME}/bin/hbase classpath` ${HADOOP_HOME}/bin/hadoop jar ${HBASE_HOME}/lib/hbase-server-1.1.2.jar importtsv -Dimporttsv.columns=HBASE_ROW_KEY,cf:c1,cf:c2 mytable5 hdfs:/localhost:8020/hbase_inputs/import/sample1.tsv
+
+----------------------------------------------------
+
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator=, -Dimporttsv.columns=HBASE_ROW_KEY,cf:c1,cf:c2 mytable6 hdfs:/localhost:8020/hbase_inputs/import/sample2.csv
+
+HADOOP_CLASSPATH=`${HBASE_HOME}/bin/hbase classpath` ${HADOOP_HOME}/bin/hadoop jar ${HBASE_HOME}/lib/hbase-server-1.1.2.jar importtsv -Dimporttsv.separator=, -Dimporttsv.columns=HBASE_ROW_KEY,cf:c1,cf:c2 mytable6 hdfs:/localhost:8020/hbase_inputs/import/sample2.csv
+
+----------------------------------------------------
+
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.columns=HBASE_ROW_KEY,cf:c1,cf:c2 -Dimporttsv.bulk.output=hdfs:/localhost:8020/hbase_inputs/export datatsv hdfs:/localhost:8020/hbase_inputs/import/sample1.tsv
+
+HADOOP_CLASSPATH=`${HBASE_HOME}/bin/hbase classpath` ${HADOOP_HOME}/bin/hadoop jar ${HBASE_HOME}/lib/hbase-server-1.1.2.jar importtsv -Dimporttsv.columns=HBASE_ROW_KEY,cf:c1,cf:c2 -Dimporttsv.bulk.output=hdfs:/localhost:8020/hbase_inputs/export datatsv hdfs:/localhost:8020/hbase_inputs/import/sample1.tsv
+
+----------------------------------------------------
+
+hbase org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles hdfs:/localhost:8020/hbase_inputs/export 'mytable6'
+
+HADOOP_CLASSPATH=`${HBASE_HOME}/bin/hbase classpath` ${HADOOP_HOME}/bin/hadoop jar ${HBASE_HOME}/lib/hbase-server-1.1.2.jar completebulkload hdfs:/localhost:8020/hbase_inputs/export 'mytable6'
+
+----------------------------------------------------
+
+create 'mycount', 'cf'
+describe 'mycount'
+for i in 1..1000
+put 'mycount', "r#{i}", 'cf:c1', i
+end
+flush 'mycount'
+
+----------------------------------------------------
+
+count 'mycount'
+
+count 'mycount', INTERVAL => 100
+
+count 'mycount', CACHE => 100
+
+count 'mycount', INTERVAL => 100, CACHE => 100
+
+get_counter 'mycount', 'r1', 'cf:c1'
+
+
+incr 'mycount', 'r1', 'cf:c1', 1
+incr 'mycount', 'r1', 'cf:c1', 10
+
+----------------------------------------------------
+
+Compact all regions in a table:
+hbase> compact 't1'
+
+Compact an entire region:
+hbase> compact 'r1'
+
+Compact only a column family within a region:
+hbase> compact 'r1', 'c1'
+
+Compact a column family within a table:
+hbase> compact 't1', 'c1'
+
+hbase> flush 'REGIONNAME'
+
+
+Compact all regions in a table:
+hbase> major_compact 't1'
+
+Compact an entire region:
+hbase> major_compact 'r1'
+
+Compact a single column family within a region:
+hbase> major_compact 'r1', 'c1'
+
+Compact a single column family within a table:
+hbase> major_compact 't1', 'c1'
+
+hbase> move 'ENCODED_REGIONNAME', 'SERVER_NAME'
+
+----------------------------------------------------
+
+
+============================================================================
+			HBase Filters
+============================================================================
+
+Comparison Operators
+-----------------------------
+LESS (<)
+LESS_OR_EQUAL (<=)
+EQUAL (=)
+NOT_EQUAL (!=)
+GREATER_OR_EQUAL (>=)
+GREATER (>)
+
+
+Comparators
+-----------------------------
+BinaryComparator --> lexicographically compares against the specified byte array using the Bytes.compareTo(byte[], byte[]) method.
+
+BinaryPrefixComparator --> lexicographically compares against a specified byte array. It only compares up to the length of this byte array.
+
+RegexStringComparator --> compares against the specified byte array using the given regular expression. Only EQUAL and NOT_EQUAL comparisons are valid with this comparator.
+
+SubStringComparator --> tests whether or not the given substring appears in a specified byte array. The comparison is case insensitive. Only EQUAL and NOT_EQUAL comparisons are valid with this comparator.
+
+
+Examples
+-----------------------------
+Example1: >, 'binary:abc' will match everything that is lexicographically greater than "abc" 
+
+Example2: =, 'binaryprefix:abc' will match everything whose first 3 characters are lexicographically equal to "abc" 
+
+Example3: !=, 'regexstring:ab*yz' will match everything that doesn't begin with "ab" and ends with "yz"
+
+Example4: =, 'substring:abc123' will match everything that begins with the substring "abc123"
+
+-----------------------------------------------------
+
+create 'test', { NAME => 'cf', VERSIONS => 5 }
+put 'test', 'row1', 'cf:a', 'value1'
+put 'test', 'row2', 'cf:b', 'value2'
+put 'test', 'row3', 'cf:c', 'value3'
+
+
+put 'test', 'row3', 'cf:b', 'value4'
+
+
+
+-----------------------------------------------------
+
+scan 'test', {FILTER => "(KeyOnlyFilter())"}
+scan 'test', {FILTER => "(FirstKeyOnlyFilter())"}
+
+scan 'test', {FILTER => "(ValueFilter(=,'binary:value'))"}
+scan 'test', {FILTER => "(ValueFilter(=,'substring:value2'))"}
+
+scan 'test', {FILTER => "(PrefixFilter('row'))"}
+scan 'test', {FILTER => "(ColumnPrefixFilter('a'))"}
+scan 'test', {FILTER => "(MultipleColumnPrefixFilter('a','b'))"}
+scan 'test', {FILTER => "(InclusiveStopFilter('row2'))"}
+
+
+scan 'test', {FILTER => "(PrefixFilter('row') AND ColumnPrefixFilter('a'))"}
+scan 'test', {FILTER => "(PrefixFilter('row') OR ColumnPrefixFilter('a'))"}
+
+scan 'test', {FILTER => "(FamilyFilter(=,'binary:cf'))"}
+scan 'test', {FILTER => "(RowFilter(=,'binary:row1'))"}
+scan 'test', {FILTER => "(QualifierFilter(=,'binary:c'))"}
+
+scan 'test', {FILTER => "(PageFilter(2))"}
+scan 'test', {FILTER => "(ColumnPaginationFilter(2,0))"}
+
+scan 'test', {FILTER => "(PrefixFilter('row') AND TimestampsFilter (410661418196))"}
+
+
+============================================================================
+		HBase NameSpace Examples
+============================================================================
+
+#Create a namespace
+create_namespace 'my_ns'
+
+#create my_table in my_ns namespace
+create 'my_ns:my_table', 'fam'
+
+#insert data into my_table in my_ns namespace
+put 'my_ns:my_table', 'row1', 'fam:a', 'value1'
+put 'my_ns:my_table', 'row2', 'fam:b', 'value2'
+
+#read data from my_table in my_ns namespace
+scan 'my_ns:my_table'
+
+#drop namespace
+drop_namespace 'my_ns'
+
+#alter namespace
+alter_namespace 'my_ns', {METHOD => 'set', 'PROPERTY_NAME' => 'PROPERTY_VALUE'}
+
+
+
+DIFFERENT WAYS TO EXECUTE HBASE COMMANDS
+-------------------------------------------------------------
+echo "describe 'test'" | hbase shell
+
+hbase shell /home/hadoop/softwares/hbase/sample_commands.txt
+
+
+create 't', 'f'
+put 't', 'r1', 'f', 'v'
+scan 't'
+describe 't'
+disable 't'
+drop 't'
+
+t = create 't', 'f'
+t.put 'r1', 'f', 'v'
+t.scan
+t.describe
+t.disable
+t.drop
+
+tab = get_table 't'
+tab.scan
+
+tables = list('t.*')
+
+------------------------------------------------
+	HBASE REST SERVICE COMMANDS
+------------------------------------------------
+# Foreground
+$HBASE_HOME/bin/hbase rest start -p <port>
+
+# Background, logging to a file in $HBASE_LOGS_DIR
+$HBASE_HOME/bin/hbase-daemon.sh start rest -p <port>
+
+
+Cluster Information
+------------------------
+HBase Version
+http:/localhost:8080/version/cluster
+
+Cluster Status
+http:/localhost:8080/status/cluster
+
+Table List
+http:/localhost:8080/
+
+

@@ -1,0 +1,59 @@
+Note: 
+-------------
+1. Flatten on BAG, it will do iterating all the `tuples in the BAG and Display the inner content of each Tuple line by line`
+
+2. Flatten on TUPLE, it will do `Display the inner content of Tuple`
+
+3. GENERATE will convert the `Fields into Tuple`
+
+--------------------------------------------------
+
+B = foreach A generate flatten({(a1,b1),(a2,b2),(a3,b3)})
+	==>
+		(a1,b1)
+		(a2,b2)
+		(a3,b3)
+
+
+B = foreach A generate x, flatten({(a1,b1),(a2,b2),(a3,b3)})
+	==>
+		(x,a1,b1)
+		(x,a2,b2)
+		(x,a3,b3)
+
+
+B = foreach A generate x, flatten({(a1,b1),(a2,b2),(a3,b3)}), y
+	==>
+		(x,a1,b1,y)
+		(x,a2,b2,y)
+		(x,a3,b3,y)
+
+-------------------------------------------------
+
+B = foreach A generate flatten(((a1,b1),(a2,b2),(a3,b3)))
+	==>
+		((a1,b1),(a2,b2),(a3,b3))
+
+
+B = foreach A generate x, flatten(((a1,b1),(a2,b2),(a3,b3)))
+	==>
+		(x,(a1,b1),(a2,b2),(a3,b3))
+
+
+B = foreach A generate x, flatten(((a1,b1),(a2,b2),(a3,b3))) ,   y
+	==>
+		(x,(a1,b1),(a2,b2),(a3,b3),y)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,73 @@
+A = load '/home/hadoop/softwares/pigpig_inputs/join_A' AS (id:int, name:chararray);
+(2,Tie)
+(4,Coat)
+(3,Hat)
+(1,Scarf)
+
+B = load '/home/hadoop/softwares/pigpig_inputs/join_B' AS (name:chararray, id:int);
+(Joe,2)
+(Hank,4)
+(Ali,0)
+(Eve,3)
+(Hank,2)
+
+A1 = GROUP A BY id;
+(1,{(1,Scarf)})
+(2,{(2,Tie)})
+(3,{(3,Hat)})
+(4,{(4,Coat)})
+
+B1 = GROUP B BY id;
+(0,{(Ali,0)})
+(2,{(Hank,2),(Joe,2)})
+(3,{(Eve,3)})
+(4,{(Hank,4)})
+
+C1 = JOIN A1 BY group, B1 BY group;
+C2 = JOIN A1 BY group LEFT OUTER, B1 BY group;
+C3 = JOIN A1 BY group RIGHT OUTER, B1 BY group;
+C4 = JOIN A1 BY group FULL OUTER, B1 BY group;
+
+dump C1
+(2,{(2,Tie)},2,{(Hank,2),(Joe,2)})
+(3,{(3,Hat)},3,{(Eve,3)})
+(4,{(4,Coat)},4,{(Hank,4)})
+
+X1 = foreach C1 generate $0, $1, $3;
+X1 = foreach C1 generate A1::group, A1::A, B1::B;
+
+dump X1
+(2,{(2,Tie)},{(Hank,2),(Joe,2)})
+(3,{(3,Hat)},{(Eve,3)})
+(4,{(4,Coat)},{(Hank,4)})
+
+Y1 = cogroup A BY id INNER, B By id INNER;
+Y2 = cogroup A BY id INNER, B By id;
+Y3 = cogroup A BY id, B By id INNER;
+Y4 = cogroup A BY id, B By id;
+
+dump Y1
+(2,{(2,Tie)},{(Hank,2),(Joe,2)})
+(3,{(3,Hat)},{(Eve,3)})
+(4,{(4,Coat)},{(Hank,4)})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

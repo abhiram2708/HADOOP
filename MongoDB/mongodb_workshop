@@ -1,0 +1,172 @@
+# exporting the environment varaibles
+export MONGODB_HOME=/home/hadoop/softwares/mongodb/mongodb-linux-x86_64-2.4.12
+export PATH=$MONGODB_HOME/bin:$PATH
+
+
+mkdir /home/hadoop/softwares/mongodb/mongodb_data
+
+To start mongodb server:- 
+mongod --dbpath=/home/hadoop/softwares/mongodb/mongodb_data
+
+To connect mongodb server:
+mongo
+
+<<<==========================>>>
+	MongoDB examples
+<<<==========================>>>
+show dbs
+
+use abhi
+
+show collections
+
+=====================================>>>
+db.employee.find()
+
+db.employee.insert({name: "anil", dept: "dev", salary: 10000, location: "hyd"})
+
+or
+
+var record = {name: "anil", dept: "dev", salary: 10000, location: "hyd"}
+db.employee.insert(record)
+=====================================<<<
+
+
+=====================================>>>
+db.employee.drop()
+
+var emp1 = {name: "raj", dept: "dev", salary: 15000, location: "hyd"}
+var emp2 = {name: "venkat", dept: "test", salary: 10000, location: "hyd"}
+var emp3 = {name: "mahesh", dept: "adm", salary: 20000, location: "banglore"}
+var emp4 = {name: "rajesh", dept: "test", salary: 30000, location: "banglore"}
+
+db.employee.insert(emp1)
+db.employee.insert(emp2)
+db.employee.insert(emp3)
+db.employee.insert(emp4)
+
+db.employee.find()
+db.employee.find().pretty();
+=====================================<<<
+
+
+=====================================>>>
+db.employee.find({name: "rajesh"})
+
+db.employee.find({name: "rajesh"}, {})
+
+db.employee.find({name: "rajesh"}, {_id: 1})
+
+db.employee.find({name: "rajesh"}, {_id: 0})
+
+db.employee.find({name: "rajesh"}, {_id: 0, name: 1})
+
+db.employee.find({name: "rajesh"}, {_id: 0, name: 0})
+=====================================<<<
+
+
+
+=====================================>>>
+db.employee.find({dept: "pig"}, {})
+
+db.employee.find({name: "rajesh", dept: "pig"}, {})
+
+db.employee.find({$or: [{name: "rajesh"}, {dept: "adm"}]}, {})
+
+db.employee.find({$or: [{name: "raj"}, {dept: "adm"}]}, {})
+
+db.employee.find({location: "hyd", $or: [{name: "raj"}, {dept: "adm"}]}, {})
+
+db.employee.find({location: "hyd", $or: [{name: "venkat"}, {dept: "test"}]}, {})
+
+db.employee.find({location: "hyd", $or: [{name: "rajesh"}, {dept: "test"}]}, {})
+
+db.employee.find({location: "hyd", name: { $in: ['venkat','raj']}}, {})
+
+db.employee.find({location: "hyd", name: { $in: ['mahesh','raj']}}, {})
+
+db.employee.find({$or: [{location: "hyd"}, {name: { $in: ['mahesh','raj']}}]}, {})
+
+db.employee.find({$or: [{location: "hyd"}, {name: 'mahesh'}, {name: 'raj'}]}, {})
+
+db.employee.find({name: { $in: ['mahesh','raj']}}, {})
+=====================================<<<
+
+
+
+=====================================>>>
+db.employee.find({salary: { $gt: 10000}}, {})
+
+db.employee.find({salary: { $gte: 10000}}, {})
+
+db.employee.find({salary: { $lt: 10000}}, {})
+
+db.employee.find({salary: { $lte: 10000}}, {})
+
+db.employee.find({salary: { $eq: 10000}}, {})
+
+db.employee.find({salary: { $ne: 10000}}, {})
+
+db.employee.find({salary: { $gt: 10000, $lt: 20000}}, {})
+
+db.employee.find({salary: { $gte: 10000, $lte: 20000}}, {})
+=====================================<<<
+
+
+
+=====================================>>>
+var myCursor = db.employee.find();
+
+var myFirempocument = myCursor.hasNext() ? myCursor.next() : null;
+myCursor.objsLeftInBatch();
+
+var mySecondDocument = myCursor.hasNext() ? myCursor.next() : null;
+myCursor.objsLeftInBatch();
+
+var myCursor = db.employee.find();
+while (myCursor.hasNext()) {
+   print(tojson(myCursor.next()));
+}
+
+var myCursor = db.employee.find();
+while (myCursor.hasNext()) {
+   printjson(myCursor.next());
+}
+
+var myCursor = db.employee.find();
+myCursor.forEach(printjson);
+
+var myCursor = db.employee.find();
+myCursor.forEach(print);
+
+
+var documentArray = myCursor.toArray();
+var myDocument = myCursor[3];
+var myDocument = documentArray[3];
+=====================================<<<
+
+
+
+=====================================>>>
+db.employee.drop()
+
+var emp1 = {name: "raj", dept: "dev", salary: 15000, location: "hyd"}
+var emp2 = {name: "venkat", dept: "test", salary: 10000, location: "hyd"}
+var emp3 = {name: "mahesh", dept: "adm", salary: 20000, location: "banglore"}
+var emp4 = {name: "rajesh", dept: "test", salary: 30000, location: "banglore"}
+
+var employees = [ emp1, emp2, emp3, emp4];
+db.employee.insert(employees)
+db.employee.find({})
+=====================================<<<
+
+
+=====================================>>>
+db.employee.drop()
+
+db.employee.insert({_id: 1, name: "anil", dept: "test",  salary: 10000, location: "hyd"})
+=====================================<<<
+
+
+
+

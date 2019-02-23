@@ -1,0 +1,187 @@
+HDFS Adavced commands :
+======================
+
+
+--> checksum
+
+	Desription:
+		Returns the checksum information of a file.It internally use MD5 algorithm to caluculate check value.
+	Syntax: hdfs dfs -checksum <path>
+	
+
+	example: hdfs dfs -checksum /home/abhi/hdfs/wordcount
+
+===========================================================================================================================================
+--> chgrp
+	
+	Description :
+		To change the group permission to  file. To use this command user must be owner of that file or must be super user.use -R 			option for change group permission recursively.
+	Syntax:
+		hdfs dfs -chgrp groupname <path>
+	Example:
+		$ hdfs dfs -chgrp supergroup /home/abhi/hdfs/wordcount
+
+
+===========================================================================================================================================
+
+--->chmod
+	Description :
+		To change the permission to  file. To use this command user must be owner of that file or must be super user.use -R 			option for change group permission recursively.
+	Syntax:
+		hdfs dfs -chmod [ModeOfPermission] <path>
+	Example:
+		$ hdfs dfs -chmod 755 /home/abhi/hdfs/wordcount
+
+
+
+===========================================================================================================================================
+--> chown
+		Description:
+		
+		To change the owership of file use chown command.The user must be a super-user.The -R option will make the change 				recursively through the directory structure
+
+		Syntax:
+			hdfs dfs -chown [owner]:[group] <path>
+		Example:
+			hdfs dfs -chown abhi:supergroup /home/abhi/hdfs/wordcount
+
+===========================================================================================================================================
+--> createSnapshot
+
+		Description:
+			The common use cases of snapshots are data backup, protection against user errors and disaster recovery.HDFS 					Snapshots are read-only point-in-time copies of the file system. Snapshots can be taken on a subtree of the 					file system or the entire file system. 
+		
+		Syntax: 
+			hdfs dfsadmin -allowSnapshot <path>
+			hdfs dfs -createSnapshot <path> [<snapshotName>]
+		Example:
+			hdfs dfsadmin -allowSnapshot /home/abhi/hdfs
+ 			hdfs dfs -createSnapshot /home/abhi/hdfs samplesnapshot
+
+
+===========================================================================================================================================
+--> df
+		Desription :
+ 				this commannd use for display the free space of hdfs disk.The -h option will format file sizes in a 					“human-readable” fashion 
+		Syntax: 
+				
+			hadoop fs -df [-h] URI [URI ...]
+
+			Example:
+			hdfs dfs -h /
+
+===========================================================================================================================================
+--> du
+
+		Description :
+			Displays sizes of files and directories contained in the given directory or the length of a file in case its just a 				file.
+		Syntax:
+			hadoop fs -du  URI [URI ...]
+		Example:
+			hadoop fs -du /home/abhi/hdfs
+
+
+===========================================================================================================================================
+->expunge
+		Descrption:
+			This command is used to empty the trash available in a HDFS system.	
+		Example:	hadoop fs –expunge
+
+
+===========================================================================================================================================
+-->  getfacl
+		Descrption :
+			Displays the Access Control Lists (ACLs) of files and directories. If a directory has a default ACL, then getfacl 				also displays the default ACL.
+
+			Syntax:
+			hadoop fs -getfacl [-R] <path>  
+
+
+===========================================================================================================================================
+-->  getmerge
+		Description:
+			 	This command merge the all files in directory and save as single file in local filesystem  
+		example:
+			hdfs  dfs -getmerge  /src /opt/output.txt
+
+
+===========================================================================================================================================
+---> help
+	Usage: hadoop fs -help
+
+	Return the usage of command.
+		Example:
+
+		hdfs dfs -help
+
+
+
+===========================================================================================================================================
+--> tail 
+	Description:
+		Print last st one kilobyte of filecontent in stdout.
+
+	Description:
+		hdfs dfs -tail /home/abhi/file1
+
+
+
+===========================================================================================================================================
+-->test
+	Desription:
+		this command is use for test different use cases like path exist,file exists,content exist.
+		
+		Options:
+
+			-d: f the path is a directory, return 0.
+			-e: if the path exists, return 0.
+			-f: if the path is a file, return 0.
+			-s: if the path is not empty, return 0.
+			-r: if the path exists and read permission is granted, return 0.
+			-w: if the path exists and write permission is granted, return 0.
+			-z: if the file is zero length, return 0.
+
+			hadoop fs -test -e /home/abhi/file1
+				
+
+
+===========================================================================================================================================
+--> truncate
+		Description:
+			truncate the file size to given specified size
+
+		Syntax:
+			 hadoop fs -truncate  <length> <paths>
+		Example:
+			hadoop fs -truncate 55 /home/abhi/file1 
+
+===========================================================================================================================================
+
+
+
+
+===========================================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

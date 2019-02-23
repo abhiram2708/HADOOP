@@ -1,0 +1,1066 @@
+HOW TO RUN PIG IN LOCAL MODE
+------------------------------------------------------------
+pig -x local
+
+HOW TO RUN PIG IN MAPREDUCE MODE
+------------------------------------------------------------
+pig -x mapreduce 	(or)	pig
+
+
+DATA TYPES IN PIG
+------------------------------------------------------------
+SIMPLE TYPES:
+------------------------------	
+int, long, float, double, boolean, chararray, bytearray, ...
+
+
+COMPLEX TYPES:
+------------------------------
+bag, tuple, field, map
+
+
+ABOUT PIG SCHEMA (FULL SCHEMA, PARTIAL SCHEMA, WITH OUT SCHEMA)
+------------------------------------------------------------
+records = load '/home/orienit/work/pig_inputs/sample.txt' AS (year, temperature, quality);
+describe records;
+records: {year: bytearray,temperature: bytearray,quality: bytearray}
+
+records = load '/home/orienit/work/pig_inputs/sample.txt' AS (year:int, temperature:int, quality:int);
+describe records;
+records: {year: int,temperature: int,quality: int}
+
+records = load '/home/orienit/work/pig_inputs/sample.txt' AS (year, temperature:int, quality:int);
+describe records;
+records: {year: bytearray,temperature: int,quality: int}
+
+records = load '/home/orienit/work/pig_inputs/sample.txt';
+describe records;
+Schema for records unknown.
+
+
+EXAMPLES ON PIG
+------------------------------------------------------------
+// select year,temperature,quality from records;
+projected_records = foreach records generate $0, $1, $2;
+dump projected_records;
+(1950,0,1)
+(1950,22,1)
+(1950,-11,1)
+(1949,111,1)
+(1949,78,1)
+
+describe projected_records;
+projected_records: {bytearray,bytearray,bytearray}
+
+-- schema is used at run time, if the value of the field cannot be cast, then a null is replaced with it
+A = load '/home/orienit/work/pig_inputs/schema_A' AS (id:int, item:int);
+describe A;
+A: {id: int,item: int}
+
+dump A;
+(2,)
+(4,)
+(3,)
+(1,)
+
+B = foreach A generate $0, $1;
+describe B;
+B: {id: int,item: int}
+
+C = foreach A generate $0+1, $1;
+describe C;
+C: {int,item: int}
+
+D = foreach A generate (int) $0 + 1 AS f0, $1;
+describe D;
+D: {f0: int,item: int}
+
+E = filter A BY $0 >= 0;
+describe E;
+E: {id: int,item: int}
+
+
+
+A = load '/home/orienit/work/pig_inputs/schema_A' AS (id:int, item:int);
+B = foreach A generate $0, $1;
+C = foreach B generate $0+1, $1;
+D = foreach C generate (int) $0 + 2 AS f0, $1;
+E = filter D BY $0 >= 0;
+explain E;
+illustrate E;
+
+
+Debug Commands in PIG:
+----------------------------------
+1. DESCRIBE -> Displaying the BAG schema in Console.
+
+2. DUMP -> Displaying the BAG data in Console.
+
+3. EXPLAIN -> Displaying the 3 Plans (Logical Plan, Physical Plan, Mapreduce Plan)
+
+4. ILLUSTRATE -> Displaying the Step-By-Step execution flow
+
+
+
+
+
+
+For Each:
+----------------
+A = load '/home/orienit/work/pig_inputs/foreach_A' AS (f0:chararray, f1:chararray, f2:int);
+dump A;
+(Joe,cherry,2)
+(Ali,apple,3)
+(Joe,banana,2)
+(Eve,apple,7)
+
+store A into 'out' using PigStorage(':');
+cat out
+Joe:cherry:2
+Ali:apple:3
+Joe:banana:2
+Eve:apple:7
+
+B = foreach A generate $0, $2+1, 'Constant';
+dump B;
+(Joe,3,Constant)
+(Ali,4,Constant)
+(Joe,3,Constant)
+(Eve,8,Constant)
+
+describe B;
+B: {f0: chararray,int,chararray}
+
+C = foreach A generate $0, (int) $2 +1 AS f1, 'Constant' AS f2;
+dump C;
+(Joe,2,Constant)
+(Ali,3,Constant)
+(Joe,2,Constant)
+(Eve,7,Constant)
+
+describe C;
+C: {f0: chararray,f1: int,f2: chararray}
+
+
+
+Sort:
+------------------
+A = load '/home/orienit/work/pig_inputs/sort_A';
+dump A;
+(2,3)
+(1,2)
+(1,5)
+(2,4)
+
+B = ORDER A BY $0, $1 DESC;
+dump B;
+(1,5)
+(1,2)
+(2,4)
+(2,3)
+
+C = foreach B generate *;
+dump C;
+(1,5)
+(1,2)
+(2,4)
+(2,3)
+
+
+D = LIMIT B 2;
+dump D;
+(1,5)
+(1,2)
+
+
+No schema changes:
+-----------------------------
+B1 = foreach A generate *;
+B2 = foreach A generate $1 ..;
+F1 = filter A by  $0 > 1;
+O1 = order A by $0;
+L1 = limit A 5;
+
+Schema changes:
+-----------------------------
+B3 = foreach A generate $1 .. $5;
+B4 = foreach A generate .. $5;
+B5 = foreach A generate $1, $2, $5;
+B6 = foreach A generate $1 , $2 + 1;
+
+
+
+
+
+
+
+
+
+
+
+Combine:
+---------------------
+A = load '/home/orienit/work/pig_inputs/combine_A' AS (f0:int, f1:int);
+B = load '/home/orienit/work/pig_inputs/combine_B' AS (f0:chararray, f1:chararray, f2:int);
+dump A;
+(2,3)
+(1,2)
+(2,4)
+
+dump B;
+(z,x,8)
+(w,y,1)
+
+C = UNION A, B;
+
+describe A;
+A: {f0: int,f1: int}
+
+describe B;
+B: {f0: chararray,f1: chararray,f2: int}
+
+describe C;
+Schema for C unknown.
+
+store C into 'out' using PigStorage(':');
+-- D = load 'out';
+
+dump C;
+(z,x,8)
+(w,y,1)
+(2,3)
+(1,2)
+(2,4)
+
+D = foreach C generate $0,$1,$2;
+dump D;
+(2,3,)
+(1,2,)
+(2,4,)
+(z,x,8)
+(w,y,1)
+
+
+D = foreach C generate $0 AS f1,$1 AS f2,$2 AS f3;
+dump D;
+(2,3,)
+(1,2,)
+(2,4,)
+(z,x,8)
+(w,y,1)
+
+
+
+Group:
+--------------------
+A = load '/home/orienit/work/pig_inputs/group_A';
+dump A;
+(Joe,cherry)
+(Ali,apple)
+(Joe,banana)
+(Eve,apple)
+
+G1 = GROUP A BY $1;
+dump G1;
+(apple,{(Ali,apple),(Eve,apple)})
+(banana,{(Joe,banana)})
+(cherry,{(Joe,cherry)})
+
+describe G1;
+G1: {group: bytearray,A: {()}}
+
+G2 = GROUP A BY SIZE($1);
+dump G2;
+(5,{(Ali,apple),(Eve,apple)})
+(6,{(Joe,cherry),(Joe,banana)})
+
+describe G2;
+G2: {group: long,A: {()}}
+
+G3 = GROUP A ALL;
+dump G3;
+(all,{(Joe,cherry),(Ali,apple),(Joe,banana),(Eve,apple)})
+
+describe G3;     
+G3: {group: chararray,A: {()}}
+
+
+D = foreach G3 generate COUNT(A);
+dump D;
+(4)
+
+Working Scripts:
+-------------------------------
+D = foreach G3 generate COUNT(A);
+D = foreach G2 generate COUNT(A);
+D = foreach G1 generate COUNT(A);
+
+
+Invalid scalar projection:
+-------------------------------
+D = foreach G3 generate COUNT(G1);
+D = foreach G3 generate COUNT(G2);
+
+
+Could not infer the matching function for org.apache.pig.builtin.COUNT as multiple or none of them fit. Please use an explicit cast.
+------------------------------------------
+D = foreach G3 generate COUNT(group);
+D = foreach G2 generate COUNT(group);
+D = foreach G1 generate COUNT(group);
+
+
+
+Working Scripts:
+-------------------------------
+D = foreach G3 generate SIZE(group);
+D = foreach G2 generate SIZE(group);
+D = foreach G1 generate SIZE(group);
+
+
+
+
+
+
+
+
+
+Join:
+--------------
+A = load '/home/orienit/work/pig_inputs/join_A' AS (id:int, name:chararray);
+B = load '/home/orienit/work/pig_inputs/join_B' AS (name:chararray, id:int);
+dump A;
+(2,Tie)
+(4,Coat)
+(3,Hat)
+(1,Scarf)
+
+dump B;
+(Joe,2)
+(Hank,4)
+(Ali,0)
+(Eve,3)
+(Hank,2)
+
+// ReduceSide Join
+
+// inner join
+C = JOIN A BY $0, B BY $1;
+dump C;
+(2,Tie,Joe,2)
+(2,Tie,Hank,2)
+(3,Hat,Eve,3)
+(4,Coat,Hank,4)
+
+// left outer join
+C = JOIN A BY $0 LEFT OUTER, B BY $1;
+dump C;
+(1,Scarf,,)
+(2,Tie,Joe,2)
+(2,Tie,Hank,2)
+(3,Hat,Eve,3)
+(4,Coat,Hank,4)
+
+// right outer join
+C = JOIN A BY $0 RIGHT OUTER, B BY $1;
+
+dump C;
+(,,Ali,0)
+(2,Tie,Joe,2)
+(2,Tie,Hank,2)
+(3,Hat,Eve,3)
+(4,Coat,Hank,4)
+
+
+// full outer join
+C = JOIN A BY $0 FULL OUTER, B BY $1;
+
+dump C;
+(,,Ali,0)
+(1,Scarf,,)
+(2,Tie,Joe,2)
+(2,Tie,Hank,2)
+(3,Hat,Eve,3)
+(4,Coat,Hank,4)
+
+
+// MapSide Join
+
+C = JOIN A BY $0, B BY $1 USING 'replicated';
+C = JOIN A BY $0, B BY $1 USING 'skewed';
+C = JOIN A BY $0, B BY $1 USING 'merge';
+
+
+Disambiguate:
+-----------------
+A = LOAD '/home/orienit/work/pig_inputs/join_A' AS (id:int, name:chararray);
+dump A;
+(2,Tie)
+(4,Coat)
+(3,Hat)
+(1,Scarf)
+
+B = LOAD '/home/orienit/work/pig_inputs/join_B' AS (name:chararray, id:int);
+dump B;
+(Joe,2)
+(Hank,4)
+(Ali,0)
+(Eve,3)
+(Hank,2)
+
+C = JOIN A by id, B by id;
+dump C;
+(2,Tie,Joe,2)
+(2,Tie,Hank,2)
+(3,Hat,Eve,3)
+(4,Coat,Hank,4)
+
+describe C;
+C: {A::id: int,A::name: chararray,B::name: chararray,B::id: int}
+
+
+D = FOREACH C GENERATE A::name;
+D = FOREACH C GENERATE $1;
+dump D;
+(Tie)
+(Tie)
+(Hat)
+(Coat)
+
+
+---------------------------------------------
+
+I = CROSS A, B;
+dump I;
+(2,Tie,Joe,2)
+(2,Tie,Hank,4)
+(2,Tie,Ali,0)
+(2,Tie,Eve,3)
+(2,Tie,Hank,2)
+(4,Coat,Joe,2)
+(4,Coat,Hank,4)
+(4,Coat,Ali,0)
+(4,Coat,Eve,3)
+(4,Coat,Hank,2)
+(3,Hat,Joe,2)
+(3,Hat,Hank,4)
+(3,Hat,Ali,0)
+(3,Hat,Eve,3)
+(3,Hat,Hank,2)
+(1,Scarf,Joe,2)
+(1,Scarf,Hank,4)
+(1,Scarf,Ali,0)
+(1,Scarf,Eve,3)
+(1,Scarf,Hank,2)
+
+
+COGROUP
+---------------------------------------------
+
+D = COGROUP A BY $0, B BY $1;
+dump D;
+(0,{},{(Ali,0)})
+(1,{(1,Scarf)},{})
+(2,{(2,Tie)},{(Joe,2),(Hank,2)})
+(3,{(3,Hat)},{(Eve,3)})
+(4,{(4,Coat)},{(Hank,4)})
+
+E = COGROUP A BY $0 INNER, B BY $1;
+dump E;
+(1,{(1,Scarf)},{})
+(2,{(2,Tie)},{(Joe,2),(Hank,2)})
+(3,{(3,Hat)},{(Eve,3)})
+(4,{(4,Coat)},{(Hank,4)})
+
+G = COGROUP A BY $0, B BY $1 INNER;
+dump G;
+(0,{},{(Ali,0)})
+(2,{(2,Tie)},{(Joe,2),(Hank,2)})
+(3,{(3,Hat)},{(Eve,3)})
+(4,{(4,Coat)},{(Hank,4)})
+
+G = COGROUP A BY $0 INNER, B BY $1 INNER;
+dump G;
+(2,{(2,Tie)},{(Joe,2),(Hank,2)})
+(3,{(3,Hat)},{(Eve,3)})
+(4,{(4,Coat)},{(Hank,4)})
+
+
+FLATTEN EXAMPLES
+---------------------------------------------
+H = foreach G generate $1;
+dump H;
+({(2,Tie)})
+({(3,Hat)})
+({(4,Coat)})
+
+
+H = foreach G generate $2;
+dump H;
+({(Joe,2),(Hank,2)})
+({(Eve,3)})
+({(Hank,4)})
+
+H = foreach G generate FLATTEN($1);
+dump H;
+(2,Tie)
+(3,Hat)
+(4,Coat)
+
+H = foreach G generate FLATTEN($2);
+dump H;
+(Joe,2)
+(Hank,2)
+(Eve,3)
+(Hank,4)
+
+H = foreach G generate FLATTEN($1), $2;
+dump H;
+(2,Tie,{(Joe,2),(Hank,2)})
+(3,Hat,{(Eve,3)})
+(4,Coat,{(Hank,4)})
+
+
+H = foreach G generate FLATTEN($1), FLATTEN($2);
+dump H;
+(2,Tie,Joe,2)
+(2,Tie,Hank,2)
+(3,Hat,Eve,3)
+(4,Coat,Hank,4)
+
+
+
+Different effects of FLATTEN:
+-----------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/types_C' AS (f0:chararray, f1:chararray);
+dump A
+(a,pomegranate)
+(b,apple)
+
+
+B1 = FOREACH A GENERATE TOTUPLE(TOTUPLE(f0), TOTUPLE(f1));
+DUMP B1
+(((a),(pomegranate)))
+(((b),(apple)))
+
+
+B2 = FOREACH B1 GENERATE FLATTEN($0);
+DUMP B2
+((a),(pomegranate))
+((b),(apple))
+
+
+B3 = FOREACH B2 GENERATE FLATTEN($0), FLATTEN($1);
+dump B3
+(a,pomegranate)
+(b,apple)
+
+---------------------------------------------------
+
+C1 = FOREACH A GENERATE TOBAG(f0, f1);
+DUMP B
+({(a),(pomegranate)})
+({(b),(apple)})
+
+C2 = FOREACH C1 GENERATE FLATTEN($0);
+DUMP C2
+(a)
+(pomegranate)
+(b)
+(apple)
+
+---------------------------------------------------
+
+B = FOREACH C GENERATE f0, TOBAG(f1, f1);
+DUMP B
+(a,{(pomegranate),(pomegranate)})
+(b,{(apple),(apple)})
+
+F = FOREACH B GENERATE $0, FLATTEN($1);
+DUMP F
+(a,pomegranate)
+(a,pomegranate)
+(b,apple)
+(b,apple)
+
+H = FOREACH C GENERATE TOMAP(f0, f1);
+DUMP H;
+([a#pomegranate])
+([b#apple])
+
+
+C = LOAD '/home/orienit/work/pig_inputs/types_D' AS (f0:chararray, f1:chararray,  f2:chararray,f3:chararray);
+dump C;
+(a,pomegranate,raj,venkat)
+(b,apple,hello,ravi)
+(c ,orange,hi,appu)
+
+B = FOREACH C GENERATE f0, TOBAG(f1, f1), TOBAG(f2, f3);
+DUMP B
+(a,{(pomegranate),(pomegranate)},{(raj),(venkat)})
+(b,{(apple),(apple)},{(hello),(ravi)})
+(c ,{(orange),(orange)},{(hi),(appu)})
+
+
+F = FOREACH B GENERATE $0, FLATTEN($1), FLATTEN($2);
+dump F;
+
+
+(a,pomegranate,raj)
+(a,pomegranate,venkat)
+(a,pomegranate,raj)
+(a,pomegranate,venkat)
+(b,apple,hello)
+(b,apple,ravi)
+(b,apple,hello)
+(b,apple,ravi)
+(c ,orange,hi)
+(c ,orange,appu)
+(c ,orange,hi)
+(c ,orange,appu)
+
+
+Max Temparature:
+-----------------------
+records = LOAD '/home/orienit/work/pig_inputs/max_temparature_comma' using PigStorage(',') AS (year:chararray, temperature:int, quality:int);
+DUMP records;
+(1950,0,1)
+(1950,22,1)
+(1950,-11,1)
+(1949,111,1)
+(1949,78,1)
+(1949,9999,-1)
+(1950,1,-11)
+
+records = LOAD '/home/orienit/work/pig_inputs/max_temparature' AS (year:chararray, temperature:int, quality:int);
+DUMP records;
+(1950,0,1)
+(1950,22,1)
+(1950,-11,1)
+(1949,111,1)
+(1949,78,1)
+(1949,9999,-1)
+(1950,1,-11)
+
+DESCRIBE records;
+records: {year: chararray,temperature: int,quality: int}
+
+filtered_records = FILTER records BY temperature != 9999 AND (quality == 0 OR quality == 1 OR quality == 4 OR quality == 5 OR quality == 9);
+DUMP filtered_records;
+(1950,0,1)
+(1950,22,1)
+(1950,-11,1)
+(1949,111,1)
+(1949,78,1)
+
+grouped_records = GROUP filtered_records BY year;
+DUMP grouped_records;
+(1949,{(1949,111,1),(1949,78,1)})
+(1950,{(1950,0,1),(1950,22,1),(1950,-11,1)})
+
+DESCRIBE grouped_records;
+grouped_records: {group: chararray,filtered_records: {(year: chararray,temperature: int,quality: int)}}
+
+max_temp = FOREACH grouped_records GENERATE group, MAX(filtered_records.temperature);
+DUMP max_temp;
+(1949,111)
+(1950,22)
+
+ILLUSTRATE max_temp;
+-------------------------------------------------------------------------------
+| records     | year:chararray      | temperature:int      | quality:int      | 
+-------------------------------------------------------------------------------
+|             | 1949                | 111                  | 1                | 
+|             | 1949                | 78                   | 1                | 
+|             | 1949                | 9999                 | 1                | 
+-------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+| filtered_records     | year:chararray      | temperature:int      | quality:int      | 
+----------------------------------------------------------------------------------------
+|                      | 1949                | 111                  | 1                | 
+|                      | 1949                | 78                   | 1                | 
+----------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------
+| grouped_records     | group:chararray      | filtered_records:bag{:tuple(year:chararray,temperature:int,quality:int)}                          | 
+--------------------------------------------------------------------------------------------------------------------------------------------------
+|                     | 1949                 | {(1949, 111, 1), (1949, 78, 1)}                                                                   | 
+--------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------
+| max_temp     | group:chararray      | :int      | 
+---------------------------------------------------
+|              | 1949                 | 111       | 
+---------------------------------------------------
+
+grunt> fs -ls /
+hadoop@hadoop$ hadoop fs -ls /
+
+grunt> exec /home/orienit/work/pig_inputs/max_temp.pig;
+
+hadoop@hadoop$ pig -x local /home/orienit/work/pig_inputs/max_temp.pig;
+
+
+grunt> exec -param_file /home/orienit/work/pig_inputs/max_temp.properties /home/orienit/work/pig_inputs/max_temp_properties.pig;
+
+hadoop@hadoop$ pig -x local -param_file /home/orienit/work/pig_inputs/max_temp.properties /home/orienit/work/pig_inputs/max_temp_properties.pig;
+
+
+Missing Fields:
+--------------------------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/missing_fields';
+DUMP A;
+(2,Tie)
+(4,Coat)
+(3)
+(1,Scarf)
+
+B = FILTER A BY SIZE(TOTUPLE(*)) > 1;
+DUMP B;
+(2,Tie)
+(4,Coat)
+(1,Scarf)
+
+
+Multiquery:
+------------------------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/multiquery_A';
+B = FILTER A BY $1 == 'banana';
+C = FILTER A BY $1 != 'banana';
+STORE B INTO '/home/orienit/work/pig_inputs/output_b';
+STORE C INTO '/home/orienit/work/pig_inputs/output_c';
+
+make a store.pig file with above 5 lines
+$ pig -x local '/home/orienit/work/pig_inputs/store.pig';
+
+
+Null Values:
+----------------------------------------------------
+records = LOAD '/home/orienit/work/pig_inputs/sample_corrupt.txt'AS (year:chararray, temperature:int, quality:int); 
+DUMP records;
+(1950,0,1)
+(1950,22,1)
+(1950,,1)
+(1949,111,1)
+(1949,78,1)
+
+corrupt_records = FILTER records BY temperature is null;
+DUMP corrupt_records;
+(1950,,1)
+
+grouped = GROUP corrupt_records ALL;
+all_grouped = FOREACH grouped GENERATE group, COUNT(corrupt_records);
+DUMP all_grouped;
+(all,1)
+
+good_records = FILTER records BY temperature is not null;
+bad_records = FILTER records BY temperature is null;
+
+or
+
+SPLIT records INTO good_records IF temperature is not null, bad_records IF temperature is null;
+
+
+DUMP good_records;
+(1950,0,1)
+(1950,22,1)
+(1949,111,1)
+(1949,78,1)
+
+DUMP bad_records;
+(1950,,1)
+
+records = LOAD '/home/orienit/work/pig_inputs/sample_corrupt.txt' AS (year:chararray, temperature, quality:int);
+DUMP records;
+(1950,0,1)
+(1950,22,1)
+(1950,e,1)
+(1949,111,1)
+(1949,78,1)
+
+filtered_records = FILTER records BY temperature != 9999 AND (quality == 0 OR quality == 1 OR quality == 4 OR quality == 5 OR quality == 9);
+grouped_records = GROUP filtered_records BY year;
+max_temp = FOREACH grouped_records GENERATE group, MAX(filtered_records.temperature);
+DUMP max_temp;
+(1949,111.0)
+(1950,22.0)
+
+
+Stream:
+---------------------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/test' AS (f0:chararray, f1:chararray, f2:int);
+
+dump A;
+(api,cherry,2)
+(Ali,apple,3)
+(Joe,banana,2)
+(apple,xyz,7)
+
+C = STREAM A THROUGH `grep apple`;
+DUMP C;
+(Ali,apple,3)
+(apple,xyz,7)
+
+
+C = STREAM A THROUGH `cut -f 2`;
+DUMP C;
+(cherry)
+(apple)
+(banana)
+(xyz)
+
+
+C = STREAM A THROUGH `cut -f 2 | grep apple`;
+DUMP C;
+(apple)
+
+
+Tuples:
+--------------------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/tuples_A' AS (f0, t0:tuple(f1:int, f2:chararray, t1:tuple(f3:int, f4:chararray)));
+
+or
+
+A = LOAD '/home/orienit/work/pig_inputs/tuples_A' AS (f0, t0:(f1:int, f2:chararray, t1:(f3:int, f4:chararray)));
+
+DUMP A;
+(1,(1,'pomegranate',(2,'apple')))
+(2,(3,'banana',(4,lychee)))
+
+
+Types:
+------------------------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/types_A' AS (t0:tuple(f0:int, f2:chararray));
+DUMP A;
+((1,pomegranate))
+
+DESCRIBE A;
+A: {t0: (f0: int,f2: chararray)}
+
+
+Constant Operations on Pig:
+------------------------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/types_one'; 
+
+B1 = FOREACH A GENERATE (chararray) 'pomegranate' AS f0;
+DUMP B1;
+(pomegranate)
+
+DESCRIBE B1;
+B3: {f0: chararray}
+
+
+B2 = FOREACH A GENERATE (1,'pomegranate') AS t0:tuple(f0:int, f1:chararray);
+DUMP B2;
+((1,pomegranate))
+
+DESCRIBE B2;
+B2: {t0: (f0: int,f1: chararray)}
+
+
+B3 = FOREACH A GENERATE {(1,'anil'),(2,'raj'),(3,'venkat')} AS b0:bag{(f0:int, f1:chararray)};
+DUMP B3;
+({(1,anil),(2,raj),(3,venkat)})
+
+DESCRIBE B3;
+B3: {b0: {(f0: int,f1: chararray)}}
+
+
+B4 = FOREACH one GENERATE ['a'#'pomegranate'] AS m0:map[];
+DUMP B4;
+([a#pomegranate])
+
+DESCRIBE B4;
+B4: {m0: map[]}
+
+
+C = LOAD '/home/orienit/work/pig_inputs/types_C' AS (f0:chararray, f1:chararray);
+
+C1 = FOREACH C GENERATE TOTUPLE(f0, f1);
+DUMP C1;
+((a,pomegranate))
+((b,apple))
+
+C2 = FOREACH C GENERATE TOBAG(f0, f1);
+DUMP C2;
+({(a),(pomegranate)})
+({(b),(apple)})
+
+C3 = FOREACH C GENERATE TOMAP(f0, f1);
+DUMP C3;
+([a#pomegranate])
+([b#apple])
+
+
+HOW TO WORK WITH UDF'S IN PIG
+----------------------------------------------------
+records = LOAD '/home/orienit/work/pig_inputs/max_temparature' AS (year:int, temperature:int, quality:int);
+
+filtered_records1 = FILTER records BY temperature != 9999 AND (quality == 0 OR quality == 1 OR quality == 4 OR quality == 5 OR quality == 9);
+
+
+HOW TO WRITE REGISTER JAR IN PIG
+----------------------------------------------------
+REGISTER /home/orienit/work/pig_inputs/pig-examples.jar;
+
+
+HOW TO WRITE CUSTOM FILTER FUNCTION IN PIG
+----------------------------------------------------
+filtered_records2 = FILTER records BY temperature != 9999 AND com.orienit.kalyan.hadoop.training.pig.udfs.IsGoodQuality(quality);
+
+or
+
+DEFINE isGood com.orienit.kalyan.hadoop.training.pig.udfs.IsGoodQuality();
+filtered_records2 = FILTER records BY temperature != 9999 AND isGood(quality);
+DUMP filtered_records2;
+(1950,0,1)
+(1950,22,1)
+(1950,-11,1)
+(1949,111,1)
+(1949,78,1)
+
+
+HOW TO WRITE CUSTOM EVAL FUNCTION IN PIG
+----------------------------------------------------
+A = LOAD '/home/orienit/work/pig_inputs/udfs_A' AS (fruit:chararray);
+DUMP A;
+( pomegranate)
+(banana  )
+(apple)
+(  lychee )
+
+DESCRIBE A;
+A: {fruit: chararray}
+
+B = FOREACH A GENERATE com.orienit.kalyan.hadoop.training.pig.udfs.Trim(fruit);
+DUMP B;
+(pomegranate)
+(banana)
+(apple)
+(lychee)
+
+DEFINE trim com.orienit.kalyan.hadoop.training.pig.udfs.Trim();
+B = FOREACH A GENERATE trim(fruit);
+
+DESCRIBE B;
+B: {chararray}
+
+DEFINE trim InvokeForString('org.apache.commons.lang.StringUtils.trim', 'String');
+B = FOREACH A GENERATE trim(fruit);
+DUMP B;
+(pomegranate)
+(banana)
+(apple)
+(lychee)
+
+DESCRIBE B;
+B: {chararray}
+
+
+HOW TO WRITE CUSTOM LOAD FUNCTION IN PIG
+----------------------------------------------------
+records = LOAD '/home/orienit/work/pig_inputs/udfs_sample.txt' USING com.orienit.kalyan.hadoop.training.pig.udfs.CutLoadFunc('16-19,88-92,93-93') AS (year:int, temperature:int, quality:int);
+DUMP records;
+(1950,0,1)
+(1950,22,1)
+(1950,-11,1)
+(1949,111,1)
+(1949,78,1)
+
+
+HOW TO WRITE CUSTOM STORE FUNCTION IN PIG
+----------------------------------------------------
+student = load '/home/orienit/work/pig_inputs/student.txt' AS (name:chararray, id:int, course:chararray, year:int);
+
+DEFINE store1 com.orienit.kalyan.hadoop.training.pig.udfs.MyStoreFunc();
+
+DEFINE store2 com.orienit.kalyan.hadoop.training.pig.udfs.MyStoreFunc(':');
+
+DEFINE store3 com.orienit.kalyan.hadoop.training.pig.udfs.MyStoreFunc(',', '{"number.multiply":3,"text.multiply":2}');
+
+
+STORE student INTO '/home/orienit/work/pig_inputs/student_1' USING store1();
+
+STORE student INTO '/home/orienit/work/pig_inputs/student_2' USING store2();
+
+STORE student INTO '/home/orienit/work/pig_inputs/student_3' USING store3();
+
+STORE student INTO '/home/orienit/work/pig_inputs/student_4' USING com.orienit.kalyan.hadoop.training.pig.udfs.MyStoreFunc();
+
+STORE student INTO '/home/orienit/work/pig_inputs/student_5' USING com.orienit.kalyan.hadoop.training.pig.udfs.MyStoreFunc(':');
+
+STORE student INTO '/home/orienit/work/pig_inputs/student_6' USING com.orienit.kalyan.hadoop.training.pig.udfs.MyStoreFunc(',', '{"number.multiply":3,"text.multiply":2}');
+
+
+HOW TO WRITE MACROS IN PIG
+----------------------------------------------------
+DEFINE max_by_group(X, group_key, max_field) RETURNS Y {
+ A = GROUP $X by $group_key;
+ $Y = FOREACH A GENERATE group, MAX($X.$max_field);
+}
+
+----------------------------------------------------
+IMPORT '/home/orienit/work/pig_inputs/max_temp.macro';
+
+
+records = LOAD '/home/orienit/work/pig_inputs/max_temparature' AS (year:chararray, temperature:int, quality:int);
+
+filtered_records = FILTER records BY temperature != 9999 AND (quality == 0 OR quality == 1 OR quality == 4 OR quality == 5 OR quality == 9);
+
+max_temp = max_by_group(filtered_records, year, temperature);
+
+DUMP max_temp
+(1949,111)
+(1950,22)
+
+----------------------------------------------------
+
+records = LOAD '/home/orienit/work/pig_inputs/max_temparature' AS (year:chararray, temperature:int, quality:int);
+
+filtered_records = FILTER records BY temperature != 9999 AND (quality == 0 OR quality == 1 OR quality == 4 OR quality == 5 OR quality == 9);
+
+macro_max_by_group_A_0 = GROUP filtered_records by (year);
+
+max_temp = FOREACH macro_max_by_group_A_0 GENERATE group, MAX(filtered_records.(temperature));
+
+DUMP max_temp
+(1949,111)
+(1950,22)
+
+----------------------------------------------------
+
+To foster reuse, macros can be defined in separate files to Pig scripts, in which case they need to be imported into any script that uses them. An import statement looks like this:
+IMPORT '/home/orienit/work/pig_inputs/max_temp.macro';
+
+
+tuple_records = LOAD '/home/orienit/work/pig_inputs/tuple.txt' AS (t:(year:chararray, temperature:int, quality:int));
+
+dump tuple_records;
+((1950,0,1))
+((1950,22,1))
+((1950,-11,1))
+((1949,111,1))
+((1949,78,1))
+
+
+bag_records = LOAD '/home/orienit/work/pig_inputs/bag.txt' AS (b:{t:(year:chararray, temperature:int, quality:int)});
+
+dump bag_records;
+({(1950,0,1)})
+({(1950,22,1)})
+({(1950,-11,1)})
+({(1949,111,1)})
+({(1949,78,1)})
+
+
+multi_records = LOAD '/home/orienit/work/pig_inputs/multi.txt' AS (b:{t:(year:chararray, temperature:int, quality:int)},t:(year:chararray, temperature:int));
+
+dump multi_records;
+({(1950,0,1)},(1950,0))
+({(1950,22,1)},(1950,22))
+({(1950,-11,1)},(1950,-11))
+({(1949,111,1)},(1949,111))
+({(1949,78,1)},(1949,78))
+
+
+
+
+
+
