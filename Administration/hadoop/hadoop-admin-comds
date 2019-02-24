@@ -1,0 +1,101 @@
+fsck
+----
+	Description:
+	
+	check the file system check health.ITt gives complete hadoop file system information.like 
+	
+	Ex: hdfs fsck /
+
+	 Total size:	246265580 B
+	 Total dirs:	196
+	 Total files:	542
+	 Total symlinks:		0 (Files currently being written: 4)
+	 Total blocks (validated):	527 (avg. block size 467297 B)
+	 Minimally replicated blocks:	527 (100.0 %)
+	 Over-replicated blocks:	0 (0.0 %)
+	 Under-replicated blocks:	6 (1.1385199 %)
+	 Mis-replicated blocks:		0 (0.0 %)
+	 Default replication factor:	1
+	 Average block replication:	1.0
+	 Corrupt blocks:		0
+	 Missing replicas:		54 (9.29432 %)
+	 Number of data-nodes:		1
+	 Number of racks:		1
+	FSCK ended at Sun Feb 24 12:41:38 IST 2019 in 78 milliseconds
+
+
+	The filesystem under path '/' is HEALTHY
+====================================================================================================================================
+distcp:
+
+	distCp (distributed copy) is a tool used for large inter/intra-cluster copying. 
+
+       Ex:	
+	hdfs distcp hdfs://nn1:8020/foo/bar hdfs://nn2:8020/bar/foo
+
+
+====================================================================================================================================
+jar:
+
+	Runs a jar file. Users can bundle their Map Reduce code in a jar file and execute it using this command.
+	Ex:
+		hadoop jar my.jar
+===================================================================================================================================
+start-dfs.sh
+		Start the namenode ,datanode,secondary namenode services .
+stop-dfs.sh
+		Stop the namenode ,datanode,secondary namenode services .
+
+start-yarn.sh
+	       Start the Resource Manager ,NodeManager services.	
+stop-yarn.sh
+	       Stop the Resource Manager ,NodeManager services.	
+
+======================================================================================================================================
+
+format:
+	 It starts the namenode, formats it and then shuts it down.Format the hadoop filesystem .it create hadoop file system on top of 	  system os.Formats the namenode.
+		
+		Ex:
+			hadoop namenode -format
+========================================================================================================================================
+version:
+
+	 print current working hadoop verison.
+
+	Ex: hdfs version
+
+========================================================================================================================================
+classpath:
+	  Prints the class path needed to get the Hadoop jar and the required libraries.
+
+		Ex: hdfs claspath
+
+========================================================================================================================================
+ balancer:
+
+	Runs a cluster balancing utility. An administrator can simply press Ctrl-C to stop the rebalancing process.
+	
+	Ex:
+         	hdfs balancer
+========================================================================================================================================
+
+dfsadmin:
+	
+	This commanduse for run multiple admin commands
+	Ex: 	
+		hdfs dfs -safemode enter | leave | get | wait
+		hdfs dfs -safemode -refreshNodes
+
+		reference link:
+			https://hadoop.apache.org/docs/r1.2.1/commands_manual.html#dfsadmin
+
+ 
+
+
+
+
+
+
+
+
