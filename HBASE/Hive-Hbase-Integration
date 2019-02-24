@@ -1,0 +1,26 @@
+Create table in habse As below:
+-----------------------------
+
+create 'employee','personaldetails','deptdetails'
+put 'employee','eid01','personaldetails:fname','Brundesh'
+put 'employee','eid01','personaldetails:Lname','R'
+put 'employee','eid01','personaldetails:salary','10000'
+put 'employee','eid01','deptdetails:name','R&D'
+put 'employee','eid01','deptdetails:location','Banglore'
+put 'employee','eid02','personaldetails:fname','Abhay'
+put 'employee','eid02','personaldetails:Lname','Kumar'
+put 'employee','eid02','personaldetails:salary','100000'
+
+Create tablein hive as below:
+-----------------------------
+create external table employee_hbase(Eid String, f_name string, s_name string, salary int,d_location string,d_deptdetails String)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+with serdeproperties ("hbase.columns.mapping"=":key,personaldetails:fname,personaldetails:Lname,personaldetails:salary,deptdetails:location,deptdetails:name")
+tblproperties("hbase.table.name"="employee");
+
+hive> select *from employee_hbase;
+
+Note:
+----
+1)Storage Handlers are a combination of InputFormat, OutputFormat, SerDe, and specific code that Hive uses to identify an external entity as a Hive table
+2)hbase.columns.mapping : It is used to map the Hive columns with the HBase columns. The first column must be the key column which would also be same as the HBase’s row key column. 
