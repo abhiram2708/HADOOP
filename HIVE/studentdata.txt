@@ -1,0 +1,5 @@
+venkat#math,phy,chem#math:40,phy:23,chem:60#sec,500004,hyderabad#0,75.6
+kumar#math,phy,chem#math:50,phy:20,chem:40#lbngar,500005,hyderabad#1,78
+rahul#math,phy,chem#math:30,phy:22,chem:30#hitech,500003,hyderabad#2,hi:hello
+anil#math,phy,chem#math:13,phy:30,chem:60#srnagar,500002,hyderabad#3,1:rank
+arun#math,phy,chem#math:10,phy:20,chem:50#ameerpet,500001,hyderabad#4,true

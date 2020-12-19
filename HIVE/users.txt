@@ -1,0 +1,10 @@
+venkat	3
+raj	2
+appu	4
+anil	8
+anvith	9
+sony	1
+nani	6
+rani	7
+rajesh	10
+lg	5

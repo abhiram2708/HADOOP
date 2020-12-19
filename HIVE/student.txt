@@ -1,0 +1,12 @@
+arun,1	cse	 |sunil	2	cse	1 |raj	3	cse	1
+naveen	4	cse	1
+venki	5	cse	2
+prasad	6	cse	2
+sudha	7	cse	2
+ravi	1	mech	1
+raju	2	mech	1
+roja	3	mech	1
+anil	4	mech	2
+rani	5	mech	2
+anvith	6	mech	2
+madhu	7	mech	2

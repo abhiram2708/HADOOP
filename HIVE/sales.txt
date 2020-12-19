@@ -1,0 +1,9 @@
+hadoop	2010	10.0
+hadoop	2011	40.5
+hadoop	2012	60.0
+hive	2012	40.5
+hive	2013	20.0
+pig	2014	30.0
+pig	2010	10.0
+hbase	2014	70.5
+mongodb	2013	50.5

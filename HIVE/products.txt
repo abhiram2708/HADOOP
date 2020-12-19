@@ -1,0 +1,5 @@
+hadoop	1	1000
+hive	2	500
+pig	3	750
+hbase	4	600
+spark	5	1500
