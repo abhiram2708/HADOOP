@@ -99,7 +99,7 @@ WORK WITH BASIC COMMANDS:
 ==========================================================================================================================================
 ---> put 
 	Description:
-		this commmad is used for transfer the files from local system to hdfs  in hdfs .if the file alredy exit it 			fails .
+		this commmad is used for transfer the files from local system to hdfs  in hdfs .if the file alredy exit it fails .
 
 		syntax:
 			$ hdfs dfs -mkdir <locsrc> <dst>
@@ -161,7 +161,7 @@ Description:
 	
 Take Content from stdin write to hdfs file:
 -------------------------------------------
-		To write the data to hdfs file from command promt use '-' as source .it opens the buffer take input from user write 			to hdfs file.	Use ctrl+D for stop content.
+		To write the data to hdfs file from command promt use '-' as source .it opens the buffer take input from user write to hdfs file.	Use ctrl+D for stop content.
 
 		Example :
 			hdfs dfs -put - /home/chenchu/hdfs/newfile1
@@ -171,7 +171,7 @@ Take Content from stdin write to hdfs file:
 --> appendToFile
 		
 		Description :
-				This command use for append the data to existing file in hdfs.We can append single source or multiple local 					source .Data will append at end of file in hdfs. 	
+				This command use for append the data to existing file in hdfs.We can append single source or multiple local source .Data will append at end of file in hdfs. 	
 				
 
 ==========================================================================================================================================
@@ -179,7 +179,7 @@ Take Content from stdin write to hdfs file:
 -->  count
 
  		Description:
-			Count the number of directories, files and bytes under the given hdfspaths  that match the specified file 				pattern.The output columns with -count are: DIR_COUNT, FILE_COUNT, CONTENT_SIZE, PATHNAME
+			Count the number of directories, files and bytes under the given hdfspaths  that match the specified file pattern.The output columns with -count are: DIR_COUNT, FILE_COUNT, CONTENT_SIZE, PATHNAME
 		Syntax:
 			hdfs dfs -count  <path>
 		Example:
@@ -203,7 +203,7 @@ Take Content from stdin write to hdfs file:
 --> mv
 	Description:
 		move the files from one location to other location with in hdfs .his command allows multiple sources as well in which case 
-			the destination must be a directory.After this command successful excecution src  file wont'exist.Moving files 			across file systems is not permitted
+			the destination must be a directory.After this command successful excecution src  file wont'exist.Moving files across file systems is not permitted
 
 
 		Syntax:
@@ -218,7 +218,8 @@ Take Content from stdin write to hdfs file:
 --> find 
 	Description:
 	
-	Finds all files that match the specified expression and applies selected actions to them. If no path is specified then defaults to 		the current working directory. If no expression is specified then defaults to -print.
+	Finds all files that match the specified expression and applies selected actions to them. If no path is specified then defaults to the current working directory.
+	If no expression is specified then defaults to -print.
 	
 	
 
